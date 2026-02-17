@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-display: var(--font-manrope);
+  --font-serif: var(--font-playfair);
+
+  --color-primary: #2d4340;
+  --color-primary-light: #3d5753;
+  --color-secondary: #f3e5d8;
+  --color-charcoal: #1a1a1b;
+  --color-background-light: #f7f7f7;
+  --color-background-dark: #171b1a;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.5s infinite;
+  --animate-spin-slow: spin 8s linear infinite;
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px) rotate(1deg);
+    }
+
+    50% {
+      transform: translateY(-15px) rotate(2deg);
+    }
+
+    100% {
+      transform: translateY(0px) rotate(1deg);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Utilities */
+@utility glass-panel {
+  @apply bg-white/70 dark:bg-black/30 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility clip-image-slant {
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+
+body {
+  background: var(--color-background-light);
+  color: var(--color-charcoal);
+  font-family: var(--font-display), sans-serif;
+}
+
+.dark body {
+  background: var(--color-background-dark);
+  color: #e5e5e5;
+}
