@@ -18,7 +18,7 @@ export function PreviewRenderer({ previewDevice }: PreviewRendererProps) {
         <div className="flex-1 bg-gray-100 dark:bg-[#151817] flex items-center justify-center p-4 md:p-8 overflow-hidden relative">
             <div
                 className={`bg-white dark:bg-black shadow-2xl transition-all duration-500 overflow-hidden relative ${previewDevice === 'mobile'
-                        ? 'w-[375px] h-[700px] rounded-[40px] border-[8px] border-gray-900 dark:border-gray-800'
+                        ? 'w-[320px] h-[580px] rounded-[36px] border-[6px] border-gray-900 dark:border-gray-800'
                         : 'w-full max-w-5xl h-full rounded-xl border border-gray-200 dark:border-gray-800'
                     }`}
             >
@@ -29,7 +29,7 @@ export function PreviewRenderer({ previewDevice }: PreviewRendererProps) {
 
                 {/* Device Notch for Mobile */}
                 {previewDevice === 'mobile' && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-[28px] bg-gray-900 dark:bg-gray-800 rounded-b-2xl z-[200]" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[24px] bg-gray-900 dark:bg-gray-800 rounded-b-xl z-[200]" />
                 )}
             </div>
         </div>
