@@ -48,7 +48,7 @@ export default function DashboardPage() {
             .select('*')
             .eq('id', userId)
             .single();
-        
+
         if (!error && data) {
             setUserProfile(data);
         }
@@ -210,17 +210,30 @@ export default function DashboardPage() {
                                 <div key={inv.id} className="group bg-white dark:bg-[#202423] rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 dark:border-gray-800 flex flex-col h-full min-h-[320px]">
                                     {/* Thumbnail */}
                                     <div className="relative h-48 bg-gray-200 dark:bg-gray-800 overflow-hidden group-hover:opacity-95 transition-opacity">
-                                        {inv.content?.themeId === 'modern-luxury' || inv.theme_id === 'modern-luxury' ? (
-                                             <img
-                                                 alt="Modern Luxury Theme"
-                                                 className="w-full h-full object-cover"
-                                                 src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
-                                             />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                                <ImageIcon className="w-12 h-12 opacity-20" />
-                                            </div>
-                                        )}
+                                        {(() => {
+                                            const themeId = inv.content?.themeId || inv.theme_id || '';
+                                            const themeThumbnails: Record<string, { src: string; alt: string }> = {
+                                                'modern-luxury': {
+                                                    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBqkMW8Hy_JZ7ThmGf_gr2Jakw1-NPcXqXNe6Etjlo15ecZO_MEzXhav-WbLk8PSXwfMhUsHM2_bmWihaw86gouTtnjgSySpOZ_7MoEOaKd9WnARKTN8urvdIK-qOaTsjynTJvbBxT_BINJs5XaJ6YIDELxl9dj856_Ui5Igr4N_HxOCeoHCZdSehl82xw4aX7nsBByJftnOLcbvn_Z-oxoyHAFfTdlN-Mwv3tlpVgekZW-aqRzwQeSqYMnGchIWcCYLDBYXg9okMuE',
+                                                    alt: 'Modern Luxury Theme',
+                                                },
+                                                'nusa-organic': {
+                                                    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDTk7qizA7D9mGvbfYK_RpXz4lwtcA71Lrc0W780INbS-yOUvC8i6vLyJzI5R5ez75YUWmIw6VauGjbjpnZGcqgmBkpWu5Y0I8QpVUAtTnfWbCKdknDO7VwC74dooRhAvmSU4AQuY9eUpKVG1e3jltDtP5UIDFmwaG5bcoSzgRaHOGD2yfaQC8_GUGCoFiXlqNDB5rtHOdIsafseO0miaASCFdKIdgrFyBZnTYjK8gnbzaTfdu-M4TIDlvlf7yIYzVFOzQE6RelTCI',
+                                                    alt: 'Nusa Organic Theme',
+                                                },
+                                            };
+                                            const thumb = themeThumbnails[themeId];
+                                            // Try theme thumbnail, then first gallery image, then fallback icon
+                                            const imgSrc = thumb?.src || inv.content?.gallery?.[0]?.url;
+                                            const imgAlt = thumb?.alt || 'Invitation Preview';
+                                            return imgSrc ? (
+                                                <img alt={imgAlt} className="w-full h-full object-cover" src={imgSrc} />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                    <ImageIcon className="w-12 h-12 opacity-20" />
+                                                </div>
+                                            );
+                                        })()}
                                         <div className="absolute top-3 right-3">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${inv.is_published ? 'bg-primary text-white' : 'bg-gray-100 text-gray-800 border border-gray-200'}`}>
                                                 {inv.is_published ? 'Published' : 'Draft'}
@@ -250,7 +263,7 @@ export default function DashboardPage() {
                                                 </button>
                                                 {/* Card Dropdown Menu */}
                                                 <div className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-[#202423] rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 py-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-200 transform origin-top-right z-30 border border-gray-100 dark:border-gray-800">
-                                                    <button 
+                                                    <button
                                                         onClick={() => handleDelete(inv.id, inv.slug)}
                                                         className="w-full text-left flex items-center gap-2 px-3 py-2 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                                     >

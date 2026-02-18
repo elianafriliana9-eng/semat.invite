@@ -11,13 +11,13 @@ interface EditorPanelProps {
 }
 
 export function EditorPanel({ activeTab }: EditorPanelProps) {
-    const { 
-        data, 
+    const {
+        data,
         invitationId,
-        updateCouple, 
-        updateMusic, 
-        addStoryItem, 
-        removeStoryItem, 
+        updateCouple,
+        updateMusic,
+        addStoryItem,
+        removeStoryItem,
         updateStoryItem,
         addGiftAccount,
         removeGiftAccount,
@@ -29,6 +29,26 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
     const [musicLibrary, setMusicLibrary] = useState(MUSIC_LIBRARY);
     const [themeLibrary, setThemeLibrary] = useState<any[]>([]);
 
+    // Hardcoded fallback themes (always available even without DB)
+    const DEFAULT_THEMES = [
+        {
+            id: "modern-luxury",
+            name: "Modern Luxury",
+            description: "Klasik, mewah, dan abadi.",
+            price: 0,
+            preview_image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBqkMW8Hy_JZ7ThmGf_gr2Jakw1-NPcXqXNe6Etjlo15ecZO_MEzXhav-WbLk8PSXwfMhUsHM2_bmWihaw86gouTtnjgSySpOZ_7MoEOaKd9WnARKTN8urvdIK-qOaTsjynTJvbBxT_BINJs5XaJ6YIDELxl9dj856_Ui5Igr4N_HxOCeoHCZdSehl82xw4aX7nsBByJftnOLcbvn_Z-oxoyHAFfTdlN-Mwv3tlpVgekZW-aqRzwQeSqYMnGchIWcCYLDBYXg9okMuE",
+            is_active: true,
+        },
+        {
+            id: "nusa-organic",
+            name: "Nusa Organic",
+            description: "Hangat, organik, dan penuh warna alam.",
+            price: 0,
+            preview_image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDTk7qizA7D9mGvbfYK_RpXz4lwtcA71Lrc0W780INbS-yOUvC8i6vLyJzI5R5ez75YUWmIw6VauGjbjpnZGcqgmBkpWu5Y0I8QpVUAtTnfWbCKdknDO7VwC74dooRhAvmSU4AQuY9eUpKVG1e3jltDtP5UIDFmwaG5bcoSzgRaHOGD2yfaQC8_GUGCoFiXlqNDB5rtHOdIsafseO0miaASCFdKIdgrFyBZnTYjK8gnbzaTfdu-M4TIDlvlf7yIYzVFOzQE6RelTCI",
+            is_active: true,
+        },
+    ];
+
     useEffect(() => {
         const fetchMasterData = async () => {
             // Fetch Music
@@ -36,7 +56,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                 .from('master_music')
                 .select('*')
                 .eq('is_active', true);
-            
+
             if (!musicError && dbMusic && dbMusic.length > 0) {
                 setMusicLibrary(dbMusic);
             }
@@ -46,9 +66,18 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                 .from('master_themes')
                 .select('*')
                 .eq('is_active', true);
-            
-            if (!themesError && dbThemes) {
-                setThemeLibrary(dbThemes);
+
+            if (!themesError && dbThemes && dbThemes.length > 0) {
+                // Merge: DB themes take priority, then add defaults that aren't in DB
+                const dbIds = new Set(dbThemes.map((t: any) => t.id));
+                const merged = [
+                    ...dbThemes,
+                    ...DEFAULT_THEMES.filter(t => !dbIds.has(t.id))
+                ];
+                setThemeLibrary(merged);
+            } else {
+                // Fallback to hardcoded defaults
+                setThemeLibrary(DEFAULT_THEMES);
             }
         };
         fetchMasterData();
@@ -93,7 +122,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                 .getPublicUrl(filePath);
 
             if (isAudio) {
-                updateMusic({ 
+                updateMusic({
                     url: publicUrl,
                     title: file.name.replace(/\.[^/.]+$/, ""),
                     enabled: true
@@ -112,7 +141,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                     type: 'image'
                 });
             }
-            
+
             alert('Berhasil diunggah!');
         } catch (error: any) {
             console.error('Upload error:', error);
@@ -131,10 +160,10 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Informasi Pengantin</h2>
                             <p className="text-sm text-gray-500">Masukkan data detail pasangan pengantin.</p>
                         </div>
-                        
+
                         <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                             <h3 className="text-sm font-bold text-[#A89A82] uppercase tracking-[0.2em]">Mempelai Pria</h3>
-                            
+
                             {/* Photo Upload Groom */}
                             <div className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
                                 <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden border-2 border-white dark:border-gray-800 shadow-sm">
@@ -147,26 +176,26 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <div className="flex-1 space-y-1">
                                     <div className="flex items-center justify-between">
                                         <label className="text-[10px] font-bold text-gray-500 uppercase">Foto Profil</label>
-                                        <button 
+                                        <button
                                             onClick={() => document.getElementById('groom-photo-upload')?.click()}
                                             className="bg-primary text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-primary/90 transition-all"
                                         >
                                             {isUploading === 'groom' ? 'Mengunggah...' : 'Unggah Foto'}
                                         </button>
                                     </div>
-                                    <input 
-                                        type="file" 
-                                        accept="image/*" 
-                                        id="groom-photo-upload" 
-                                        className="hidden" 
-                                        onChange={(e) => handleFileUpload(e, 'groom')} 
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        id="groom-photo-upload"
+                                        className="hidden"
+                                        onChange={(e) => handleFileUpload(e, 'groom')}
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-3">
                                 <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Nama Panggilan</label>
-                                <input 
+                                <input
                                     value={data.couple.groom.name}
                                     onChange={(e) => updateCouple('groom', { name: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -176,7 +205,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
 
                             <div className="space-y-3">
                                 <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Nama Lengkap</label>
-                                <input 
+                                <input
                                     value={data.couple.groom.fullName}
                                     onChange={(e) => updateCouple('groom', { fullName: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -187,7 +216,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-3">
                                     <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Nama Ayah</label>
-                                    <input 
+                                    <input
                                         value={data.couple.groom.fatherName}
                                         onChange={(e) => updateCouple('groom', { fatherName: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 focus:ring-1 focus:ring-primary text-sm outline-none"
@@ -196,7 +225,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 </div>
                                 <div className="space-y-3">
                                     <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Nama Ibu</label>
-                                    <input 
+                                    <input
                                         value={data.couple.groom.motherName}
                                         onChange={(e) => updateCouple('groom', { motherName: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 focus:ring-1 focus:ring-primary text-sm outline-none"
@@ -208,7 +237,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
 
                         <div className="space-y-4 pt-8 border-t border-gray-100 dark:border-gray-800">
                             <h3 className="text-sm font-bold text-[#A89A82] uppercase tracking-[0.2em]">Mempelai Wanita</h3>
-                            
+
                             {/* Photo Upload Bride */}
                             <div className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
                                 <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden border-2 border-white dark:border-gray-800 shadow-sm">
@@ -221,26 +250,26 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <div className="flex-1 space-y-1">
                                     <div className="flex items-center justify-between">
                                         <label className="text-[10px] font-bold text-gray-500 uppercase">Foto Profil</label>
-                                        <button 
+                                        <button
                                             onClick={() => document.getElementById('bride-photo-upload')?.click()}
                                             className="bg-primary text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-primary/90 transition-all"
                                         >
                                             {isUploading === 'bride' ? 'Mengunggah...' : 'Unggah Foto'}
                                         </button>
                                     </div>
-                                    <input 
-                                        type="file" 
-                                        accept="image/*" 
-                                        id="bride-photo-upload" 
-                                        className="hidden" 
-                                        onChange={(e) => handleFileUpload(e, 'bride')} 
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        id="bride-photo-upload"
+                                        className="hidden"
+                                        onChange={(e) => handleFileUpload(e, 'bride')}
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-3">
                                 <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Nama Panggilan</label>
-                                <input 
+                                <input
                                     value={data.couple.bride.name}
                                     onChange={(e) => updateCouple('bride', { name: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -250,7 +279,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
 
                             <div className="space-y-3">
                                 <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Nama Lengkap</label>
-                                <input 
+                                <input
                                     value={data.couple.bride.fullName}
                                     onChange={(e) => updateCouple('bride', { fullName: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -261,7 +290,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-3">
                                     <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Nama Ayah</label>
-                                    <input 
+                                    <input
                                         value={data.couple.bride.fatherName}
                                         onChange={(e) => updateCouple('bride', { fatherName: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 focus:ring-1 focus:ring-primary text-sm outline-none"
@@ -270,7 +299,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 </div>
                                 <div className="space-y-3">
                                     <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Nama Ibu</label>
-                                    <input 
+                                    <input
                                         value={data.couple.bride.motherName}
                                         onChange={(e) => updateCouple('bride', { motherName: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 focus:ring-1 focus:ring-primary text-sm outline-none"
@@ -289,7 +318,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Galeri Foto</h2>
                                 <p className="text-sm text-gray-500">Unggah foto-foto kenangan Anda di sini.</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => document.getElementById('gallery-upload')?.click()}
                                 disabled={isUploading === 'gallery'}
                                 className="bg-primary text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-primary/90 transition-all disabled:opacity-50"
@@ -301,11 +330,11 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                     </span>
                                 ) : '+ Tambah Foto'}
                             </button>
-                            <input 
+                            <input
                                 id="gallery-upload"
-                                type="file" 
+                                type="file"
                                 accept="image/*"
-                                className="hidden" 
+                                className="hidden"
                                 multiple
                                 onChange={(e) => {
                                     const files = e.target.files;
@@ -323,7 +352,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 }}
                             />
                         </div>
-                        
+
                         <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
                             <div className="grid grid-cols-2 gap-3">
                                 {data.gallery.length === 0 && !isUploading && (
@@ -331,13 +360,13 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 )}
                                 {data.gallery.map((item, idx) => (
                                     <div key={idx} className="group relative aspect-square rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-                                        <img 
-                                            src={item.url} 
+                                        <img
+                                            src={item.url}
                                             alt={`Gallery ${idx}`}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                         />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <button 
+                                            <button
                                                 onClick={() => removeGalleryItem(item.url)}
                                                 className="bg-white/20 backdrop-blur-md p-2 rounded-full text-white hover:bg-red-500 transition-colors"
                                             >
@@ -358,7 +387,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Acara</h2>
                                 <p className="text-sm text-gray-500">Kelola jadwal dan lokasi acara.</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => {
                                     useBuilderStore.getState().addEvent({
                                         id: crypto.randomUUID(),
@@ -375,7 +404,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 + Tambah Acara
                             </button>
                         </div>
-                        
+
                         <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                             {data.events.length === 0 && (
                                 <div className="text-center py-10 opacity-40 italic text-sm">Belum ada acara. Klik "+" untuk menambah.</div>
@@ -384,7 +413,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <div key={event.id} className="p-4 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-primary/40">Event #{idx + 1}</span>
-                                        <button 
+                                        <button
                                             onClick={() => useBuilderStore.getState().removeEvent(event.id)}
                                             className="text-red-400 hover:text-red-500 transition-colors"
                                         >
@@ -395,7 +424,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                     <div className="space-y-3">
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Judul Acara</label>
-                                            <input 
+                                            <input
                                                 value={event.title}
                                                 onChange={(e) => useBuilderStore.getState().updateEvent(event.id, { title: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -406,7 +435,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Tanggal</label>
-                                                <input 
+                                                <input
                                                     type="date"
                                                     value={event.date}
                                                     onChange={(e) => useBuilderStore.getState().updateEvent(event.id, { date: e.target.value })}
@@ -415,7 +444,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Jam Mulai</label>
-                                                <input 
+                                                <input
                                                     type="time"
                                                     value={event.startTime}
                                                     onChange={(e) => useBuilderStore.getState().updateEvent(event.id, { startTime: e.target.value })}
@@ -426,7 +455,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
 
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Nama Lokasi</label>
-                                            <input 
+                                            <input
                                                 value={event.locationName}
                                                 onChange={(e) => useBuilderStore.getState().updateEvent(event.id, { locationName: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -436,7 +465,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
 
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Alamat Lengkap</label>
-                                            <textarea 
+                                            <textarea
                                                 value={event.address}
                                                 onChange={(e) => useBuilderStore.getState().updateEvent(event.id, { address: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm min-h-[80px]"
@@ -456,19 +485,18 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Pilih Tema</h2>
                             <p className="text-sm text-gray-500">Pilih desain terbaik untuk hari spesial Anda.</p>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 gap-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                             {themeLibrary.map((theme) => {
                                 const isActive = data.themeId === theme.id;
                                 return (
-                                    <button 
+                                    <button
                                         key={theme.id}
                                         onClick={() => useBuilderStore.getState().updateTheme(theme.id)}
-                                        className={`text-left p-4 rounded-2xl border transition-all flex flex-col gap-3 group relative overflow-hidden ${
-                                            isActive 
-                                            ? 'border-primary ring-1 ring-primary/20 bg-primary/5 shadow-md' 
-                                            : 'border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-gray-50 dark:hover:bg-gray-800/50'
-                                        }`}
+                                        className={`text-left p-4 rounded-2xl border transition-all flex flex-col gap-3 group relative overflow-hidden ${isActive
+                                                ? 'border-primary ring-1 ring-primary/20 bg-primary/5 shadow-md'
+                                                : 'border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                                            }`}
                                     >
                                         <div className="flex justify-between items-start w-full">
                                             <div>
@@ -488,13 +516,13 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                                 </div>
                                             )}
                                         </div>
-                                        
+
                                         {theme.preview_image && (
                                             <div className="aspect-[16/9] w-full rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                                                 <img src={theme.preview_image} alt={theme.name} className="w-full h-full object-cover" />
                                             </div>
                                         )}
-                                        
+
                                         {!theme.preview_image && (
                                             <div className="aspect-[16/9] w-full rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                                                 <ImageIcon className="w-8 h-8 text-gray-300" />
@@ -520,7 +548,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                     <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Aktifkan RSVP</h4>
                                     <p className="text-[10px] text-gray-500">Tampilkan form RSVP di undangan.</p>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => useBuilderStore.getState().updateRSVP({ enabled: !data.rsvp.enabled })}
                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${data.rsvp.enabled ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'}`}
                                 >
@@ -531,7 +559,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                             <div className="space-y-4">
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-medium text-gray-600 dark:text-gray-400">WhatsApp Notifikasi (Opsional)</label>
-                                    <input 
+                                    <input
                                         value={data.rsvp.whatsappNumber}
                                         onChange={(e) => useBuilderStore.getState().updateRSVP({ whatsappNumber: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -545,7 +573,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Input Jumlah Tamu</h4>
                                         <p className="text-[10px] text-gray-500">Tamu bisa memilih jumlah orang yang hadir.</p>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => useBuilderStore.getState().updateRSVP({ showGuestsCount: !data.rsvp.showGuestsCount })}
                                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${data.rsvp.showGuestsCount ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'}`}
                                     >
@@ -558,7 +586,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Tampilkan Buku Tamu</h4>
                                         <p className="text-[10px] text-gray-500">Tampilkan ucapan-ucapan dari tamu di undangan.</p>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => useBuilderStore.getState().updateRSVP({ showGuestBook: !data.rsvp.showGuestBook })}
                                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${data.rsvp.showGuestBook ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'}`}
                                     >
@@ -583,7 +611,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                     <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Aktifkan Musik</h4>
                                     <p className="text-[10px] text-gray-500">Musik berputar saat undangan dibuka.</p>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => useBuilderStore.getState().updateMusic({ enabled: !data.music.enabled })}
                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${data.music.enabled ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'}`}
                                 >
@@ -606,7 +634,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                             {data.music.url ? "File terhubung" : "Silakan pilih atau unggah musik"}
                                         </p>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => document.getElementById('music-upload-input')?.click()}
                                         className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 hover:text-primary transition-colors"
                                         title="Ganti Musik"
@@ -614,11 +642,11 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         <Upload className="w-4 h-4" />
                                     </button>
                                 </div>
-                                <input 
-                                    type="file" 
+                                <input
+                                    type="file"
                                     accept="audio/*"
                                     onChange={(e) => handleFileUpload(e, 'music')}
-                                    className="hidden" 
+                                    className="hidden"
                                     id="music-upload-input"
                                     disabled={isUploading === 'music'}
                                 />
@@ -635,23 +663,21 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                     <h4 className="text-xs font-bold text-[#A89A82] uppercase tracking-wider">Rekomendasi Musik</h4>
                                     <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">Royalty Free</span>
                                 </div>
-                                
+
                                 <div className="grid grid-cols-1 gap-2">
                                     {musicLibrary.map((m, i) => {
                                         const isActive = data.music.url === m.url;
                                         return (
-                                            <button 
+                                            <button
                                                 key={i}
                                                 onClick={() => useBuilderStore.getState().updateMusic({ title: m.title, url: m.url, enabled: true })}
-                                                className={`text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${
-                                                    isActive 
-                                                    ? 'border-primary bg-primary/5' 
-                                                    : 'border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-primary/5'
-                                                }`}
+                                                className={`text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isActive
+                                                        ? 'border-primary bg-primary/5'
+                                                        : 'border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-primary/5'
+                                                    }`}
                                             >
-                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                                                    isActive ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 group-hover:text-primary'
-                                                }`}>
+                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isActive ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 group-hover:text-primary'
+                                                    }`}>
                                                     {isActive ? <Play className="w-4 h-4 fill-current" /> : <Music className="w-4 h-4" />}
                                                 </div>
                                                 <div className="flex-1">
@@ -667,7 +693,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         );
                                     })}
                                 </div>
-                                
+
                                 <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/20">
                                     <p className="text-[10px] text-amber-700 dark:text-amber-400 leading-relaxed italic">
                                         <strong>Tips:</strong> Gunakan musik dengan tempo lambat (piano/akustik) untuk menciptakan suasana romantis yang elegan.
@@ -677,7 +703,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                         </div>
                     </section>
                 )}
-                
+
                 {activeTab === 'share' && (
                     <section className="space-y-6">
                         <div>
@@ -694,7 +720,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         <span className="px-3 py-2 text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
                                             semat.invite/
                                         </span>
-                                        <input 
+                                        <input
                                             value={data?.metadata?.slug || ""}
                                             onChange={(e) => {
                                                 const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
@@ -704,7 +730,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                             placeholder="link-anda"
                                         />
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             const url = `${window.location.origin}/${data?.metadata?.slug || ""}`;
                                             navigator.clipboard.writeText(url);
@@ -725,24 +751,24 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                     <h4 className="text-sm font-bold text-primary italic">Generate Link Khusus Tamu</h4>
                                     <p className="text-[10px] text-gray-500">Buat link personal yang akan menyapa tamu secara langsung.</p>
                                 </div>
-                                
+
                                 <div className="space-y-3">
                                     <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Nama Tamu</label>
                                     <div className="flex gap-2">
-                                        <input 
+                                        <input
                                             id="guest-name-input"
                                             className="flex-1 px-4 py-2.5 border border-primary/20 rounded-xl bg-white dark:bg-gray-800 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all font-sans"
                                             placeholder="Contoh: Bpk. Jaka & Keluarga"
                                         />
-                                        <button 
+                                        <button
                                             onClick={() => {
                                                 const input = document.getElementById('guest-name-input') as HTMLInputElement;
                                                 const guestName = input.value;
                                                 if (!guestName) return;
-                                                
+
                                                 const baseUrl = `${window.location.origin}/${data?.metadata?.slug || ""}`;
                                                 const personalizedUrl = `${baseUrl}?to=${encodeURIComponent(guestName)}`;
-                                                
+
                                                 navigator.clipboard.writeText(personalizedUrl);
                                                 alert(`Link untuk "${guestName}" berhasil disalin ke clipboard!`);
                                                 input.value = '';
@@ -753,7 +779,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         </button>
                                     </div>
                                 </div>
-                                
+
                                 <div className="bg-white/50 dark:bg-black/20 p-3 rounded-lg border border-primary/5">
                                     <p className="text-[10px] leading-relaxed text-gray-500">
                                         Note: Gunakan link ini saat menyebar undangan via WhatsApp agar muncul teks <strong>"Kepada: [Nama Tamu]"</strong> di undangan mereka.
@@ -771,7 +797,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Cerita Kita (Story)</h2>
                                 <p className="text-sm text-gray-500">Bagikan momen-momen berharga perjalanan cinta Anda.</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => {
                                     addStoryItem({
                                         id: crypto.randomUUID(),
@@ -785,7 +811,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 + Tambah Momen
                             </button>
                         </div>
-                        
+
                         <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                             {data.story.length === 0 && (
                                 <div className="text-center py-10 opacity-40 italic text-sm">Belum ada cerita. Klik "+" untuk menambah momen baru.</div>
@@ -794,7 +820,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <div key={item.id} className="p-4 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-primary/40">Momen #{idx + 1}</span>
-                                        <button 
+                                        <button
                                             onClick={() => removeStoryItem(item.id)}
                                             className="text-red-400 hover:text-red-500 transition-colors"
                                         >
@@ -815,18 +841,18 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                                 </div>
                                             )}
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                <button 
+                                                <button
                                                     onClick={() => document.getElementById(`story-upload-${item.id}`)?.click()}
                                                     className="bg-white text-black px-3 py-1.5 rounded-lg text-[10px] font-bold"
                                                 >
                                                     {isUploading === `story-${item.id}` ? 'Mengunggah...' : 'Ganti Foto'}
                                                 </button>
                                             </div>
-                                            <input 
+                                            <input
                                                 id={`story-upload-${item.id}`}
-                                                type="file" 
+                                                type="file"
                                                 accept="image/*"
-                                                className="hidden" 
+                                                className="hidden"
                                                 onChange={(e) => handleFileUpload(e, `story-${item.id}`)}
                                             />
                                         </div>
@@ -835,7 +861,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                     <div className="space-y-3">
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Judul Momen</label>
-                                            <input 
+                                            <input
                                                 value={item.title}
                                                 onChange={(e) => updateStoryItem(item.id, { title: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -845,7 +871,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
 
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Tanggal/Waktu</label>
-                                            <input 
+                                            <input
                                                 value={item.date}
                                                 onChange={(e) => updateStoryItem(item.id, { date: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -855,7 +881,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
 
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Cerita Singkat</label>
-                                            <textarea 
+                                            <textarea
                                                 value={item.description}
                                                 onChange={(e) => updateStoryItem(item.id, { description: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm min-h-[80px]"
@@ -876,7 +902,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Kado Digital (Gifts)</h2>
                                 <p className="text-sm text-gray-500">Tambahkan nomor rekening atau e-wallet untuk kado digital.</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => {
                                     addGiftAccount({
                                         id: crypto.randomUUID(),
@@ -890,7 +916,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 + Rekening
                             </button>
                         </div>
-                        
+
                         <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                             {data.gifts.length === 0 && (
                                 <div className="text-center py-10 opacity-40 italic text-sm">Belum ada nomor rekening. Klik "+" untuk menambah.</div>
@@ -898,7 +924,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                             {data.gifts.map((gift) => (
                                 <div key={gift.id} className="p-4 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <select 
+                                        <select
                                             value={gift.bankName}
                                             onChange={(e) => updateGiftAccount(gift.id, { bankName: e.target.value })}
                                             className="text-xs font-bold uppercase tracking-wider bg-transparent border-none outline-none text-primary"
@@ -912,7 +938,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                             <option value="GoPay">GoPay</option>
                                             <option value="Lainnya">Lainnya</option>
                                         </select>
-                                        <button 
+                                        <button
                                             onClick={() => removeGiftAccount(gift.id)}
                                             className="text-red-400 hover:text-red-500 transition-colors"
                                         >
@@ -923,7 +949,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                     <div className="space-y-3">
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Nomor Rekening/HP</label>
-                                            <input 
+                                            <input
                                                 value={gift.accountNumber}
                                                 onChange={(e) => updateGiftAccount(gift.id, { accountNumber: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -933,7 +959,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
 
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Atas Nama</label>
-                                            <input 
+                                            <input
                                                 value={gift.accountHolder}
                                                 onChange={(e) => updateGiftAccount(gift.id, { accountHolder: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
@@ -945,7 +971,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         <div className="pt-2">
                                             <div className="flex items-center justify-between mb-2">
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase">QR Code (Opsional)</label>
-                                                <button 
+                                                <button
                                                     onClick={() => document.getElementById(`qr-upload-${gift.id}`)?.click()}
                                                     className="text-[10px] font-bold text-primary hover:underline"
                                                 >
@@ -955,7 +981,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                             {gift.qrCode && (
                                                 <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                                                     <img src={gift.qrCode} alt="QR" className="w-full h-full object-cover" />
-                                                    <button 
+                                                    <button
                                                         onClick={() => updateGiftAccount(gift.id, { qrCode: '' })}
                                                         className="absolute top-0 right-0 p-1 bg-red-500 text-white rounded-bl-lg"
                                                     >
@@ -963,11 +989,11 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                                     </button>
                                                 </div>
                                             )}
-                                            <input 
+                                            <input
                                                 id={`qr-upload-${gift.id}`}
-                                                type="file" 
+                                                type="file"
                                                 accept="image/*"
-                                                className="hidden" 
+                                                className="hidden"
                                                 onChange={(e) => handleFileUpload(e, `gift-${gift.id}`)}
                                             />
                                         </div>
@@ -984,7 +1010,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Pengaturan</h2>
                             <p className="text-sm text-gray-500">Konfigurasi link dan metadata undangan.</p>
                         </div>
-                        
+
                         <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                             <div className="p-4 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-100 dark:border-gray-800 text-center space-y-2">
                                 <p className="text-sm text-gray-500 italic">Pengaturan lainnya akan segera hadir.</p>

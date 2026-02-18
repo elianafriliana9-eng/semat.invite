@@ -17,6 +17,13 @@ export default function OnboardingStep3() {
             badge: "Most Popular"
         },
         {
+            id: "nusa-organic",
+            name: "Nusa Organic",
+            description: "Hangat, organik, dan penuh warna alam.",
+            image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDTk7qizA7D9mGvbfYK_RpXz4lwtcA71Lrc0W780INbS-yOUvC8i6vLyJzI5R5ez75YUWmIw6VauGjbjpnZGcqgmBkpWu5Y0I8QpVUAtTnfWbCKdknDO7VwC74dooRhAvmSU4AQuY9eUpKVG1e3jltDtP5UIDFmwaG5bcoSzgRaHOGD2yfaQC8_GUGCoFiXlqNDB5rtHOdIsafseO0miaASCFdKIdgrFyBZnTYjK8gnbzaTfdu-M4TIDlvlf7yIYzVFOzQE6RelTCI",
+            badge: "New"
+        },
+        {
             id: "minimal",
             name: "Minimal",
             description: "Sederhana, bersih, dan modern.",

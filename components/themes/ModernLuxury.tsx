@@ -12,11 +12,11 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
   const { couple, events } = data;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  
+
   // Get primary event date for countdown
   const primaryEvent = events[0];
-  const countdownTarget = primaryEvent?.date && primaryEvent?.startTime 
-    ? `${primaryEvent.date}T${primaryEvent.startTime}:00` 
+  const countdownTarget = primaryEvent?.date && primaryEvent?.startTime
+    ? `${primaryEvent.date}T${primaryEvent.startTime}:00`
     : null;
 
   // Music Logic
@@ -27,9 +27,9 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
   const handleOpen = () => {
     setIsOpen(true);
     if (data.music?.enabled && audioRef.current) {
-        audioRef.current.play()
-            .then(() => setIsPlaying(true))
-            .catch((err) => console.log("Autoplay blocked:", err));
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => console.log("Autoplay blocked:", err));
     }
   };
 
@@ -109,16 +109,16 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
     <div className={`min-h-screen bg-[#FDFCFB] text-[#2D423F] font-serif overflow-x-hidden select-none relative ${!isOpen ? 'h-screen overflow-hidden' : ''}`}>
       <AnimatePresence>
         {!isOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, y: -100 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FDFCFB] px-6 text-center"
+            className={`${isPreview ? 'absolute' : 'fixed'} inset-0 z-[100] flex flex-col items-center justify-center bg-[#FDFCFB] px-6 text-center`}
           >
             {/* Background Texture/Pattern for Splash */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -140,13 +140,13 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
 
               <div className="w-12 h-[1px] bg-[#A89A82]/30 mx-auto" />
 
-              <button 
+              <button
                 onClick={handleOpen}
                 className="group relative px-10 py-4 bg-[#2D423F] text-[#F3E5D8] rounded-full overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-xl"
               >
                 <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                 <span className="relative z-10 text-[10px] uppercase tracking-[0.3em] font-bold flex items-center gap-3">
-                    Buka Undangan
+                  Buka Undangan
                 </span>
               </button>
             </motion.div>
@@ -164,9 +164,9 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
           >
             <span className="text-xs uppercase tracking-[0.6em] font-sans text-[#A89A82] mb-4 block">The Wedding of</span>
             <h1 className="text-4xl md:text-6xl font-light leading-none tracking-tight">
-                {couple.groom.name || "Groom"} <br />
-                <span className="text-3xl md:text-5xl font-serif text-[#A89A82] italic opacity-40">&</span> <br />
-                {couple.bride.name || "Bride"}
+              {couple.groom.name || "Groom"} <br />
+              <span className="text-3xl md:text-5xl font-serif text-[#A89A82] italic opacity-40">&</span> <br />
+              {couple.bride.name || "Bride"}
             </h1>
           </motion.div>
 
@@ -185,41 +185,41 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
       {/* Couple Section */}
       <section className="py-24 px-6 max-w-5xl mx-auto text-center">
         <div className="grid md:grid-cols-[1fr,60px,1fr] gap-12 items-center">
-          
+
           {/* Groom */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="space-y-8"
           >
             <div className="relative mx-auto w-64 h-64 group">
-                <div className="absolute -inset-4 border border-[#A89A82]/10 rounded-full"></div>
-                <div className="absolute inset-0 border border-[#A89A82]/30 rounded-full"></div>
-                <div className="absolute inset-4 rounded-full overflow-hidden shadow-2xl bg-[#F8F6F3]">
-                    {couple.groom.photo ? (
-                        <img 
-                            src={couple.groom.photo} 
-                            alt={couple.groom.name} 
-                            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" 
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#A89A82]/30 text-xs italic">Photo of Groom</div>
-                    )}
-                </div>
+              <div className="absolute -inset-4 border border-[#A89A82]/10 rounded-full"></div>
+              <div className="absolute inset-0 border border-[#A89A82]/30 rounded-full"></div>
+              <div className="absolute inset-4 rounded-full overflow-hidden shadow-2xl bg-[#F8F6F3]">
+                {couple.groom.photo ? (
+                  <img
+                    src={couple.groom.photo}
+                    alt={couple.groom.name}
+                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[#A89A82]/30 text-xs italic">Photo of Groom</div>
+                )}
+              </div>
             </div>
-            
+
             <div className="space-y-4">
-                <h2 className="text-4xl font-light italic text-[#2D423F]">
-                    {couple.groom.fullName || couple.groom.name || "Nama Pengantin Pria"}
-                </h2>
-                <div className="space-y-2">
-                    <p className="font-sans text-[11px] tracking-[0.2em] text-[#A89A82] uppercase font-bold">Putra Dari</p>
-                    <p className="font-sans text-sm text-[#2D423F]/70 leading-relaxed italic">
-                        Bapak {couple.groom.fatherName || "..."} <br />
-                        & Ibu {couple.groom.motherName || "..."}
-                    </p>
-                </div>
+              <h2 className="text-4xl font-light italic text-[#2D423F]">
+                {couple.groom.fullName || couple.groom.name || "Nama Pengantin Pria"}
+              </h2>
+              <div className="space-y-2">
+                <p className="font-sans text-[11px] tracking-[0.2em] text-[#A89A82] uppercase font-bold">Putra Dari</p>
+                <p className="font-sans text-sm text-[#2D423F]/70 leading-relaxed italic">
+                  Bapak {couple.groom.fatherName || "..."} <br />
+                  & Ibu {couple.groom.motherName || "..."}
+                </p>
+              </div>
             </div>
           </motion.div>
 
@@ -231,50 +231,50 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
           </div>
 
           {/* Bride */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="space-y-8"
           >
             <div className="relative mx-auto w-64 h-64 group">
-                <div className="absolute -inset-4 border border-[#A89A82]/10 rounded-full"></div>
-                <div className="absolute inset-0 border border-[#A89A82]/30 rounded-full"></div>
-                <div className="absolute inset-4 rounded-full overflow-hidden shadow-2xl bg-[#F8F6F3]">
-                    {couple.bride.photo ? (
-                        <img 
-                            src={couple.bride.photo} 
-                            alt={couple.bride.name} 
-                            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" 
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#A89A82]/30 text-xs italic">Photo of Bride</div>
-                    )}
-                </div>
+              <div className="absolute -inset-4 border border-[#A89A82]/10 rounded-full"></div>
+              <div className="absolute inset-0 border border-[#A89A82]/30 rounded-full"></div>
+              <div className="absolute inset-4 rounded-full overflow-hidden shadow-2xl bg-[#F8F6F3]">
+                {couple.bride.photo ? (
+                  <img
+                    src={couple.bride.photo}
+                    alt={couple.bride.name}
+                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[#A89A82]/30 text-xs italic">Photo of Bride</div>
+                )}
+              </div>
             </div>
 
             <div className="space-y-4">
-                <h2 className="text-4xl font-light italic text-[#2D423F]">
-                    {couple.bride.fullName || couple.bride.name || "Nama Pengantin Wanita"}
-                </h2>
-                <div className="space-y-2">
-                    <p className="font-sans text-[11px] tracking-[0.2em] text-[#A89A82] uppercase font-bold">Putri Dari</p>
-                    <p className="font-sans text-sm text-[#2D423F]/70 leading-relaxed italic">
-                        Bapak {couple.bride.fatherName || "..."} <br />
-                        & Ibu {couple.bride.motherName || "..."}
-                    </p>
-                </div>
+              <h2 className="text-4xl font-light italic text-[#2D423F]">
+                {couple.bride.fullName || couple.bride.name || "Nama Pengantin Wanita"}
+              </h2>
+              <div className="space-y-2">
+                <p className="font-sans text-[11px] tracking-[0.2em] text-[#A89A82] uppercase font-bold">Putri Dari</p>
+                <p className="font-sans text-sm text-[#2D423F]/70 leading-relaxed italic">
+                  Bapak {couple.bride.fatherName || "..."} <br />
+                  & Ibu {couple.bride.motherName || "..."}
+                </p>
+              </div>
             </div>
           </motion.div>
 
         </div>
       </section>
-      
+
       {/* Our Story Section */}
       {data.story && data.story.length > 0 && (
         <section className="py-24 px-6 relative overflow-hidden">
           <div className="max-w-4xl mx-auto space-y-16">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -288,10 +288,10 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
             <div className="relative">
               {/* Vertical Line */}
               <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-[#A89A82]/30 to-transparent -translate-x-1/2" />
-              
+
               <div className="space-y-20">
                 {data.story.map((item, idx) => (
-                  <motion.div 
+                  <motion.div
                     key={item.id}
                     initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -330,7 +330,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
       {/* Events Section */}
       <section className="py-24 px-6 bg-[#F8F6F3]">
         <div className="max-w-4xl mx-auto space-y-16">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -342,7 +342,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
 
           <div className="grid md:grid-cols-2 gap-8">
             {events.map((event) => (
-              <motion.div 
+              <motion.div
                 key={event.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -372,7 +372,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
       {/* Gallery Section */}
       <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto space-y-16">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -385,22 +385,21 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {data.gallery.length === 0 && (
-                <div className="col-span-full py-20 text-center border-2 border-dashed border-[#A89A82]/10 rounded-2xl flex flex-col items-center justify-center opacity-30">
-                    <p className="font-sans text-sm italic">Gallery will appear here when you add photos.</p>
-                </div>
+              <div className="col-span-full py-20 text-center border-2 border-dashed border-[#A89A82]/10 rounded-2xl flex flex-col items-center justify-center opacity-30">
+                <p className="font-sans text-sm italic">Gallery will appear here when you add photos.</p>
+              </div>
             )}
             {data.gallery.map((item, idx) => (
-              <motion.div 
+              <motion.div
                 key={idx}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className={`overflow-hidden bg-gray-100 rounded-lg ${
-                    idx % 3 === 0 ? 'aspect-[3/4]' : 'aspect-square'
-                }`}
+                className={`overflow-hidden bg-gray-100 rounded-lg ${idx % 3 === 0 ? 'aspect-[3/4]' : 'aspect-square'
+                  }`}
               >
-                <img 
-                  src={item.url} 
+                <img
+                  src={item.url}
                   alt=""
                   className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-700 hover:scale-105"
                 />
@@ -414,7 +413,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
       {data.gifts && data.gifts.length > 0 && (
         <section className="py-24 px-6 bg-[#FDFCFB]">
           <div className="max-w-4xl mx-auto space-y-16">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -429,7 +428,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {data.gifts.map((gift) => (
-                <div 
+                <div
                   key={gift.id}
                   className="bg-white p-10 shadow-sm border border-[#A89A82]/10 text-center space-y-6"
                 >
@@ -442,7 +441,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
                     <div className="bg-[#F8F6F3] py-4 px-6 rounded-lg text-lg font-sans tracking-wider border border-[#A89A82]/5 text-[#2D423F]">
                       {gift.accountNumber}
                     </div>
-                    <button 
+                    <button
                       onClick={() => {
                         navigator.clipboard.writeText(gift.accountNumber);
                         alert(`Nomor rekening ${gift.bankName} berhasil disalin!`);
@@ -472,7 +471,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
       {data.rsvp?.enabled && (
         <section className="py-24 px-6 bg-[#F8F6F3]">
           <div className="max-w-xl mx-auto space-y-12">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -488,25 +487,25 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
             {isSubmitted ? (
               <div className="bg-white p-12 shadow-sm border border-[#A89A82]/10 text-center space-y-4">
                 <div className="w-16 h-16 bg-[#2D423F] rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span className="text-[#F3E5D8] text-2xl">✓</span>
+                  <span className="text-[#F3E5D8] text-2xl">✓</span>
                 </div>
                 <h3 className="text-2xl font-light text-[#2D423F] italic">Terima Kasih!</h3>
                 <p className="font-sans text-sm text-gray-500">Konfirmasi kehadiran Anda telah kami terima.</p>
-                <button 
-                    onClick={() => setIsSubmitted(false)}
-                    className="text-[10px] uppercase tracking-widest text-[#A89A82] font-semibold border-b border-[#A89A82]/20 pb-1"
+                <button
+                  onClick={() => setIsSubmitted(false)}
+                  className="text-[10px] uppercase tracking-widest text-[#A89A82] font-semibold border-b border-[#A89A82]/20 pb-1"
                 >
-                    Kirim Pesan Lainnya
+                  Kirim Pesan Lainnya
                 </button>
               </div>
             ) : (
-              <form 
+              <form
                 className="space-y-6 bg-white p-8 md:p-12 shadow-sm border border-[#A89A82]/10"
                 onSubmit={handleSubmit}
               >
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest text-[#A89A82] font-semibold">Nama Lengkap</label>
-                  <input 
+                  <input
                     name="name"
                     required
                     disabled={isSubmitting}
@@ -517,7 +516,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
 
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest text-[#A89A82] font-semibold">Nomor WhatsApp</label>
-                  <input 
+                  <input
                     name="phone"
                     required
                     disabled={isSubmitting}
@@ -542,16 +541,16 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
 
                 {data.rsvp.showGuestsCount && (
                   <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-[#A89A82] font-semibold">Jumlah Tamu</label>
-                      <select name="guests_count" disabled={isSubmitting} className="w-full bg-[#FDFCFB] border-b border-[#A89A82]/20 py-3 px-1 outline-none focus:border-[#2D423F] font-sans disabled:opacity-50">
-                          {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} Orang</option>)}
-                      </select>
+                    <label className="text-[10px] uppercase tracking-widest text-[#A89A82] font-semibold">Jumlah Tamu</label>
+                    <select name="guests_count" disabled={isSubmitting} className="w-full bg-[#FDFCFB] border-b border-[#A89A82]/20 py-3 px-1 outline-none focus:border-[#2D423F] font-sans disabled:opacity-50">
+                      {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n} Orang</option>)}
+                    </select>
                   </div>
                 )}
 
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest text-[#A89A82] font-semibold">Ucapan & Doa</label>
-                  <textarea 
+                  <textarea
                     name="message"
                     required
                     disabled={isSubmitting}
@@ -560,15 +559,15 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
                   />
                 </div>
 
-                <button 
+                <button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full bg-[#2D423F] text-[#F3E5D8] py-4 font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#1A2B29] transition-all shadow-md group disabled:opacity-50"
                 >
                   {isSubmitting ? "Mengirim..." : (
                     <>
-                        Kirim Konfirmasi 
-                        <span className="inline-block transition-transform group-hover:translate-x-1 ml-2">→</span>
+                      Kirim Konfirmasi
+                      <span className="inline-block transition-transform group-hover:translate-x-1 ml-2">→</span>
                     </>
                   )}
                 </button>
@@ -592,22 +591,22 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
       {/* Floating Music Controller */}
       {data.music?.enabled && (
         <div className={`${isPreview ? 'absolute' : 'fixed'} bottom-8 left-8 z-[100]`}>
-          <button 
+          <button
             onClick={toggleMusic}
             className="relative flex items-center justify-center w-12 h-12 bg-[#2D423F] text-[#F3E5D8] rounded-full shadow-2xl hover:scale-110 transition-transform group"
           >
             {/* Pulsing Aura */}
             {isPlaying && (
-              <motion.div 
+              <motion.div
                 animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className="absolute inset-0 bg-[#2D423F] rounded-full -z-10"
               />
             )}
-            
+
             <AnimatePresence mode="wait">
               {isPlaying ? (
-                <motion.div 
+                <motion.div
                   key="playing"
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -618,9 +617,9 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
                     <motion.div
                       key={i}
                       animate={{ height: [4, 12, 4] }}
-                      transition={{ 
-                        duration: 0.6, 
-                        repeat: Infinity, 
+                      transition={{
+                        duration: 0.6,
+                        repeat: Infinity,
                         delay: i * 0.2,
                         ease: "easeInOut"
                       }}
@@ -637,7 +636,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
                   className="relative"
                 >
                   <Music className="w-5 h-5" />
-                  <motion.div 
+                  <motion.div
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
                     className="absolute inset-0 flex items-center justify-center"
