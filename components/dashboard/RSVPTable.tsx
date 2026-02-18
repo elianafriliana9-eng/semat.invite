@@ -2,16 +2,16 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
-import { 
-    Loader2, 
-    RefreshCw, 
-    ChevronLeft, 
-    Download, 
-    Search, 
-    Users, 
-    CheckCircle2, 
-    XCircle, 
-    Trash2, 
+import {
+    Loader2,
+    RefreshCw,
+    ChevronLeft,
+    Download,
+    Search,
+    Users,
+    CheckCircle2,
+    XCircle,
+    Trash2,
     MessageSquare,
     Check
 } from "lucide-react";
@@ -31,14 +31,14 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
     const fetchRsvps = async () => {
         if (!invitationId) return;
         setIsLoading(true);
-        
+
         try {
             const { data, error } = await supabase
                 .from('rsvps')
                 .select('*')
                 .eq('invitation_id', invitationId)
                 .order('created_at', { ascending: false });
-            
+
             if (error) throw error;
             setRsvps(data || []);
         } catch (error) {
@@ -54,7 +54,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                 .from('rsvps')
                 .update({ is_checked_in: !currentStatus })
                 .eq('id', id);
-            
+
             if (error) throw error;
             setRsvps(prev => prev.map(item => item.id === id ? { ...item, is_checked_in: !currentStatus } : item));
         } catch (error) {
@@ -65,13 +65,13 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
 
     const deleteRSVP = async (id: string) => {
         if (!confirm("Apakah Anda yakin ingin menghapus konfirmasi ini?")) return;
-        
+
         try {
             const { error } = await supabase
                 .from('rsvps')
                 .delete()
                 .eq('id', id);
-            
+
             if (error) throw error;
             setRsvps(prev => prev.filter(item => item.id !== id));
         } catch (error) {
@@ -86,7 +86,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
             .filter(r => r.attendance === 'yes' || r.attendance === 'Hadir')
             .reduce((acc, curr) => acc + (curr.guests_count || 1), 0);
         const tidakHadir = total - hadirCount;
-        
+
         return { total, hadirCount, totalGuests, tidakHadir };
     }, [rsvps]);
 
@@ -142,7 +142,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button 
+                    <button
                         onClick={exportToCSV}
                         disabled={rsvps.length === 0 || isLoading}
                         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#202423] border border-gray-200 dark:border-gray-800 rounded-lg text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm disabled:opacity-50"
@@ -150,7 +150,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                         <Download className="w-4 h-4 text-primary" />
                         Export
                     </button>
-                    <button 
+                    <button
                         onClick={fetchRsvps}
                         className="p-2 bg-white dark:bg-[#202423] border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm"
                     >
@@ -202,7 +202,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-grow">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input 
+                    <input
                         type="text"
                         placeholder="Cari nama tamu..."
                         value={searchTerm}
@@ -211,7 +211,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                     />
                 </div>
                 <div className="flex gap-2">
-                    <select 
+                    <select
                         value={filterAttendance}
                         onChange={(e) => setFilterAttendance(e.target.value as any)}
                         className="px-4 py-2 bg-white dark:bg-[#202423] border border-gray-200 dark:border-gray-800 rounded-lg outline-none text-sm focus:border-primary"
@@ -222,7 +222,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                     </select>
                 </div>
             </div>
-            
+
             {/* Table Container */}
             <div className="bg-white dark:bg-[#202423] rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
@@ -262,11 +262,10 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-1">
-                                                <span className={`inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[9px] font-black tracking-tighter ${
-                                                    rsvp.attendance === 'yes' || rsvp.attendance === 'Hadir'
-                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' 
+                                                <span className={`inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[9px] font-black tracking-tighter ${rsvp.attendance === 'yes' || rsvp.attendance === 'Hadir'
+                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
                                                         : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
-                                                }`}>
+                                                    }`}>
                                                     {rsvp.attendance === 'yes' || rsvp.attendance === 'Hadir' ? 'HADIR' : 'ABSEN'}
                                                 </span>
                                                 <span className="text-[9px] text-gray-500 ml-1 font-medium">{rsvp.guests_count || 1} Person</span>
@@ -281,7 +280,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                                             {new Date(rsvp.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button 
+                                            <button
                                                 onClick={() => toggleCheckIn(rsvp.id, rsvp.is_checked_in)}
                                                 className={`w-10 h-5 rounded-full relative transition-all duration-300 ${rsvp.is_checked_in ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'}`}
                                             >
@@ -291,9 +290,9 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 {rsvp.phone && (
-                                                    <a 
-                                                        href={`https://wa.me/${rsvp.phone.replace(/[^0-9]/g, '')}`} 
-                                                        target="_blank" 
+                                                    <a
+                                                        href={`https://wa.me/${rsvp.phone.replace(/[^0-9]/g, '')}`}
+                                                        target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="p-1.5 hover:bg-green-100 dark:hover:bg-green-900/30 rounded text-green-600 transition-colors"
                                                         title="WhatsApp Tamu"
@@ -301,7 +300,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                                                         <MessageSquare className="w-4 h-4" />
                                                     </a>
                                                 )}
-                                                <button 
+                                                <button
                                                     onClick={() => deleteRSVP(rsvp.id)}
                                                     className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded text-red-600 transition-colors"
                                                     title="Hapus Konfirmasi"
@@ -317,7 +316,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                     </table>
                 </div>
                 <div className="bg-gray-50/50 dark:bg-gray-800/30 px-6 py-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
-                    <span className="text-[10px] text-gray-400 font-medium">© 2026 Semat.invite - Pro Dashboard</span>
+                    <span className="text-[10px] text-gray-400 font-medium">© 2026 KanvasKita - Pro Dashboard</span>
                     <span className="text-[10px] text-gray-400 font-medium">Menampilkan {filteredRsvps.length} dari {rsvps.length} data</span>
                 </div>
             </div>

@@ -959,7 +959,7 @@ export default function NusaOrganic({ data, id, isPreview, guestName }: ThemePro
                     <div className="h-[1px] w-24" style={{ backgroundColor: `${NUSA_PRIMARY}4D` }} />
                 </div>
                 <p className="text-xs" style={{ color: NUSA_NEUTRAL }}>
-                    © {new Date().getFullYear()} NUSA Wedding — Crafted with Semat.invite
+                    © {new Date().getFullYear()} NUSA Wedding — Crafted with KanvasKita
                 </p>
             </footer>
 

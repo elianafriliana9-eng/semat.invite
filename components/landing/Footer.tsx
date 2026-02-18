@@ -8,7 +8,7 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-1">
                         <div className="flex items-center gap-2 mb-6">
                             <Sparkles className="text-secondary w-6 h-6" />
-                            <span className="font-serif font-bold text-xl">Semat.invite</span>
+                            <span className="font-serif font-bold text-xl">KanvasKita</span>
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
                             Platform undangan pernikahan digital yang mengutamakan estetika dan kemudahan penggunaan.
@@ -56,7 +56,7 @@ export function Footer() {
                 </div>
 
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-xs text-gray-500">© 2024 Semat.invite. All rights reserved.</p>
+                    <p className="text-xs text-gray-500">© 2024 KanvasKita. All rights reserved.</p>
                     <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                         <span className="text-xs text-gray-400">System Operational</span>

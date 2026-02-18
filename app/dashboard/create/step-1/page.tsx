@@ -44,7 +44,7 @@ export default function OnboardingStep1() {
                     {/* Welcome Header */}
                     <div className="mb-16 space-y-4">
                         <span className="inline-block px-3 py-1 rounded-full border border-primary/30 text-xs font-medium tracking-wider text-primary bg-primary/5 mb-4 font-sans">
-                            SEMAT.INVITE
+                            KanvasKita
                         </span>
                         <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-normal leading-tight text-primary dark:text-white">
                             Siapakah yang <span className="italic text-primary-light">berbahagia?</span>

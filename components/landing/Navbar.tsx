@@ -38,7 +38,7 @@ export function Navbar() {
                     <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
                         <Sparkles className="text-primary dark:text-white w-6 h-6" />
                         <span className="font-serif font-bold text-2xl text-primary dark:text-white tracking-tight">
-                            Semat<span className="text-primary/60 dark:text-white/60">.invite</span>
+                            Kanvas<span className="text-primary/60 dark:text-white/60">Kita</span>
                         </span>
                     </div>
 

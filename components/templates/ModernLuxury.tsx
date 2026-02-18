@@ -203,7 +203,7 @@ export default function ModernLuxuryTemplate() {
 
                         {/* Footer */}
                         <div className="mt-12 text-center pb-8">
-                            <p className="text-[#2d4340]/40 dark:text-white/30 text-[10px] uppercase tracking-widest">Semat.invite</p>
+                            <p className="text-[#2d4340]/40 dark:text-white/30 text-[10px] uppercase tracking-widest">KanvasKita</p>
                         </div>
                     </section>
                 </div>

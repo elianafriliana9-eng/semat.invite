@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
   const content = invitation.content;
   const groom = content.couple?.groom?.name || "Groom";
   const bride = content.couple?.bride?.name || "Bride";
-  const title = `The Wedding of ${groom} & ${bride} | Semat.invite`;
+  const title = `The Wedding of ${groom} & ${bride} | KanvasKita`;
   const description = `Buka undangan digital pernikahan ${groom} & ${bride}. Elegan dalam Sematan, Abadi dalam Ingatan.`;
   const image = content.couple?.groom?.photo || content.couple?.bride?.photo || "/og-image.png";
 
@@ -38,8 +38,8 @@ export async function generateMetadata({ params }: PublicInvitationPageProps): P
     openGraph: {
       title,
       description,
-      url: `https://semat.invite/${slug}`,
-      siteName: 'Semat.invite',
+      url: `https://KanvasKita/${slug}`,
+      siteName: 'KanvasKita',
       images: [{ url: image }],
       type: 'article',
     },

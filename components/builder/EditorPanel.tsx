@@ -494,8 +494,8 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                         key={theme.id}
                                         onClick={() => useBuilderStore.getState().updateTheme(theme.id)}
                                         className={`text-left p-4 rounded-2xl border transition-all flex flex-col gap-3 group relative overflow-hidden ${isActive
-                                                ? 'border-primary ring-1 ring-primary/20 bg-primary/5 shadow-md'
-                                                : 'border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                                            ? 'border-primary ring-1 ring-primary/20 bg-primary/5 shadow-md'
+                                            : 'border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-gray-50 dark:hover:bg-gray-800/50'
                                             }`}
                                     >
                                         <div className="flex justify-between items-start w-full">
@@ -672,8 +672,8 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                                 key={i}
                                                 onClick={() => useBuilderStore.getState().updateMusic({ title: m.title, url: m.url, enabled: true })}
                                                 className={`text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isActive
-                                                        ? 'border-primary bg-primary/5'
-                                                        : 'border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-primary/5'
+                                                    ? 'border-primary bg-primary/5'
+                                                    : 'border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-primary/5'
                                                     }`}
                                             >
                                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isActive ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 group-hover:text-primary'
@@ -718,7 +718,7 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
                                 <div className="flex items-center gap-2">
                                     <div className="flex-1 flex items-center bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-all">
                                         <span className="px-3 py-2 text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
-                                            semat.invite/
+                                            KanvasKita/
                                         </span>
                                         <input
                                             value={data?.metadata?.slug || ""}

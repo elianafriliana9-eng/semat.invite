@@ -39,7 +39,7 @@ export default function ThemesPage() {
                         <Link href="/" className="flex items-center gap-2">
                             <Sparkles className="text-primary dark:text-white w-5 h-5" />
                             <span className="font-serif font-bold text-xl text-primary dark:text-white tracking-tight">
-                                Semat<span className="text-primary/60 dark:text-white/60">.invite</span>
+                                Kanvas<span className="text-primary/60 dark:text-white/60">Kita</span>
                             </span>
                         </Link>
                         <Link
@@ -172,7 +172,7 @@ export default function ThemesPage() {
             {/* Footer */}
             <footer className="py-6 text-center border-t border-primary/5 dark:border-white/5">
                 <p className="text-[11px] text-primary/30 dark:text-white/20 font-light tracking-wider">
-                    &copy; {new Date().getFullYear()} Semat.invite &mdash; Elegan dalam Sematan, Abadi dalam Ingatan
+                    &copy; {new Date().getFullYear()} KanvasKita &mdash; Elegan dalam Sematan, Abadi dalam Ingatan
                 </p>
             </footer>
 
