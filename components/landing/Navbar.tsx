@@ -19,7 +19,7 @@ export function Navbar() {
     }, []);
 
     const navLinks = [
-        { name: "Showcase", href: "#showcase" },
+        { name: "Showcase", href: "/themes" },
         { name: "Fitur", href: "#features" },
         { name: "Harga", href: "#pricing" },
         { name: "Tentang Kami", href: "#about" },

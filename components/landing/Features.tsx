@@ -98,34 +98,39 @@ export function Features() {
                     </div>
 
                     {/* Feature 4: Theme Gallery */}
-                    <div className="md:col-span-2 row-span-1 bg-secondary/20 dark:bg-secondary/5 rounded-2xl overflow-hidden border border-secondary/30 dark:border-white/5 shadow-sm hover:shadow-md transition-all relative">
+                    <Link href="/themes" className="md:col-span-2 row-span-1 bg-secondary/20 dark:bg-secondary/5 rounded-2xl overflow-hidden border border-secondary/30 dark:border-white/5 shadow-sm hover:shadow-md transition-all relative group cursor-pointer">
                         <div className="absolute inset-0 flex">
                             <div
-                                className="w-1/3 h-full bg-cover bg-center border-r border-white/20 grayscale hover:grayscale-0 transition-all duration-700"
+                                className="w-1/3 h-full bg-cover bg-center border-r border-white/20 grayscale group-hover:grayscale-0 transition-all duration-700"
                                 style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB0jMdhybYnGAOChNikMukWmpRsGWEe0tIUjVuqAt2QV7CrdpnKCqzJgMC_-I-Mwy9eNNbQUgCt8z1c1G8XtAOIzP3Pvp5v2PmCVYXsyV3zcaB9eO1trORPNBeuj-nydVThLTljza5H6bS8lbBx-8ZMIogsBTFnh9nykttyY5uPSOwYGyovB1Uvd3cIM08lCfBzYFRTnHJm24eOj7C76Yzz38eyZOPTu0sRIHCmXuLzJrXFLc0zTh1CH4G4JtnGKKEV5YlDL2abDmU-')" }}
                             >
                                 <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs">Botanical</div>
                             </div>
                             <div
-                                className="w-1/3 h-full bg-cover bg-center border-r border-white/20 grayscale hover:grayscale-0 transition-all duration-700"
+                                className="w-1/3 h-full bg-cover bg-center border-r border-white/20 grayscale group-hover:grayscale-0 transition-all duration-700"
                                 style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKsS7qV-tlqhbldGd7_8cndu0_EMknyrlusS59YbKaPPurSRZuuUdUW1ScleqI7vy79BOSwcra0uTVWYNEe6wKTZZEdVre2SPPbnGzpq4Rgy9T7rMf6L483iolwQlAhxMdDGq953aqnnO8E0zR5mpaPcQC1QIuZTX8C5VCwieNlip1eoP_SKNL3L7eVw3Rz80X0hfT-eWOre5QpDs60amqfhvQ0tN9-kIuG0QCr08snhrF4TRQuKyhVdfEHBp_A_OPm5m9gXjCLRQr')" }}
                             >
                                 <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs">Modern</div>
                             </div>
                             <div
-                                className="w-1/3 h-full bg-cover bg-center grayscale hover:grayscale-0 transition-all duration-700"
+                                className="w-1/3 h-full bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-700"
                                 style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC1HFi-5OMxAk0Elj6pmh0oun-dm4lUKbTl-JUIlbJQOd2dsoMEdtQzarvh4axQTuC0h24OybOY4gHGfsnoHwarqhT19eKnr61BfHkQwVGnBQim7bw2wH6zhaRIlUvxjliZfP2nuOL0nAFdgK--a9jaTV1JkBvkT8CwN59qcZ-GmBVmofy00gQ2PunmSm5CrWJ3fUlu1rnc7NnTtIUIcFzKQeyCa4ONuqhnr06bunk9DJy5mF5JPAKWcLJrQUMdHg8K4l7MzpH9p5u2')" }}
                             >
                                 <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs">Classic</div>
                             </div>
                         </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8 pointer-events-none">
-                            <div className="text-white">
-                                <h3 className="text-2xl font-serif mb-1">Galeri Tema Premium</h3>
-                                <p className="text-sm opacity-80">50+ Desain kurasi eksklusif siap pakai.</p>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+                            <div className="text-white flex items-end justify-between w-full">
+                                <div>
+                                    <h3 className="text-2xl font-serif mb-1">Galeri Tema Premium</h3>
+                                    <p className="text-sm opacity-80">Desain kurasi eksklusif siap pakai.</p>
+                                </div>
+                                <span className="text-sm font-medium flex items-center gap-1 group-hover:translate-x-2 transition-transform">
+                                    Jelajahi Galeri →
+                                </span>
                             </div>
                         </div>
-                    </div>
+                    </Link>
 
                 </div>
             </div>
