@@ -11,7 +11,7 @@ export default function Home() {
     <main className="min-h-screen bg-background-light dark:bg-background-dark selection:bg-primary/30">
       <Navbar />
       <Hero />
-      <SocialProof />
+      {/* <SocialProof /> */}
       <Features />
       <Pricing />
       <CTA />
