@@ -124,7 +124,7 @@ export default function DashboardPage() {
                         <Link href="/" className="flex items-center gap-2">
                             <Sparkles className="text-primary dark:text-white w-5 h-5" />
                             <span className="font-serif font-bold text-xl text-primary dark:text-white tracking-tight">
-                                Semat<span className="text-primary/60 dark:text-white/60">.invite</span>
+                                Kanvas<span className="text-primary/60 dark:text-white/60">Kita</span>
                             </span>
                         </Link>
 
@@ -264,7 +264,7 @@ export default function DashboardPage() {
                                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm ${inv.is_published
                                                 ? 'bg-primary/90 text-white shadow-sm'
                                                 : 'bg-white/80 dark:bg-white/10 text-primary/70 dark:text-white/70 border border-white/40 dark:border-white/10'
-                                            }`}>
+                                                }`}>
                                                 {inv.is_published ? 'Published' : 'Draft'}
                                             </span>
                                         </div>
@@ -353,7 +353,7 @@ export default function DashboardPage() {
             {/* Footer */}
             <footer className="py-6 text-center border-t border-primary/5 dark:border-white/5">
                 <p className="text-[11px] text-primary/30 dark:text-white/20 font-light tracking-wider">
-                    &copy; {new Date().getFullYear()} Semat.invite &mdash; Elegan dalam Sematan, Abadi dalam Ingatan
+                    &copy; {new Date().getFullYear()} KanvasKita &mdash; Elegan dalam Sematan, Abadi dalam Ingatan
                 </p>
             </footer>
         </div>
