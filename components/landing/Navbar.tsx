@@ -60,7 +60,7 @@ export function Navbar() {
                     <div className="hidden md:block">
                         <Link href="/login">
                             <Button variant="default" className="bg-primary hover:bg-primary/90 text-white rounded-full px-6">
-                                Masuk
+                                Register / Login
                             </Button>
                         </Link>
                     </div>
