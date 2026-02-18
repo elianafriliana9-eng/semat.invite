@@ -1,5 +1,6 @@
 import { MapPin, Calendar, Clock, Heart } from "lucide-react";
 import React from "react";
+import { Countdown } from "@/components/themes/shared/Countdown";
 
 // Google Fonts link should be added in the Layout or HEAD of the page
 // <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
@@ -52,23 +53,8 @@ export default function ModernLuxuryTemplate() {
                         <h2 className="text-[#2d4340] dark:text-gray-200 text-xl font-light italic mb-8 font-serif">Save the Date</h2>
 
                         {/* Countdown Grid */}
-                        <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto mb-10 relative">
-                            <div className="flex flex-col items-center">
-                                <span className="text-3xl text-[#D4AF37] font-light tabular-nums">45</span>
-                                <span className="text-[10px] uppercase tracking-widest text-[#9db6b3] mt-2">Days</span>
-                            </div>
-                            {/* Divider Line */}
-                            <div className="absolute left-[33%] top-1/2 -translate-y-1/2 h-8 w-px bg-[#2d4340]/10 hidden sm:block"></div>
-                            <div className="flex flex-col items-center border-l border-r border-[#2d4340]/10 dark:border-white/10 px-2 sm:border-none">
-                                <span className="text-3xl text-[#D4AF37] font-light tabular-nums">12</span>
-                                <span className="text-[10px] uppercase tracking-widest text-[#9db6b3] mt-2">Hours</span>
-                            </div>
-                            {/* Divider Line */}
-                            <div className="absolute right-[33%] top-1/2 -translate-y-1/2 h-8 w-px bg-[#2d4340]/10 hidden sm:block"></div>
-                            <div className="flex flex-col items-center">
-                                <span className="text-3xl text-[#D4AF37] font-light tabular-nums">30</span>
-                                <span className="text-[10px] uppercase tracking-widest text-[#9db6b3] mt-2">Mins</span>
-                            </div>
+                        <div className="mb-10 relative">
+                            <Countdown targetDate="2024-10-14T00:00:00" />
                         </div>
 
                         <p className="text-[#263836]/70 dark:text-gray-400 text-sm leading-relaxed max-w-[280px] mx-auto font-light">

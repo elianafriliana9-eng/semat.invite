@@ -33,4 +33,14 @@ export const themeShowcaseData: ThemeShowcaseItem[] = [
         tags: ["nature", "earthy", "warm"],
         isNew: true,
     },
+    {
+        id: "senandika",
+        name: "Senandika",
+        category: "Modern",
+        description: "Elegan dan puitis. Desain minimalis dengan sentuhan tipografi klasik dan animasi halus.",
+        thumbnail: "https://lh3.googleusercontent.com/aida-public/AB6AXuDXN_kIPmI4M0j-BFBK-JG-tUupTCO64fMuhTu9S4-3CcDmSQflH3gu8xm803ViaMBbCcjHhIlZdj9SiO0eSyqglPGgDYE0vW1AWF1MhPyLDR811m4y-4gdciNgxY-ndxjxFbGUDDeYeXg9ym1VLyeUo_vjVjMfg9KdAxvufnk3dGO-JGAlAKcpelVIKE2zMadOkaYtbh7npDh67b6MLNYQ_e24Hbti_29xOpgqTUlNVNvzEIMoms5NupimcguTiQDb4gPi05NRjBM",
+        previewUrl: "/preview/senandika",
+        tags: ["minimalist", "poetic", "elegant"],
+        isNew: true,
+    },
 ];

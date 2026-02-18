@@ -274,9 +274,23 @@ export default function DashboardPage() {
                                     <div className="p-5 flex flex-col flex-grow">
                                         <div className="flex justify-between items-start mb-3">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-serif text-base font-medium text-primary dark:text-white truncate" title={inv.slug}>
-                                                    {inv.slug}
-                                                </h3>
+                                                {(() => {
+                                                    const groom = inv.content?.couple?.groom?.name;
+                                                    const bride = inv.content?.couple?.bride?.name;
+                                                    const coupleName = groom && bride ? `${groom} & ${bride}` : groom || bride || null;
+                                                    return coupleName ? (
+                                                        <>
+                                                            <h3 className="font-serif text-base font-medium text-primary dark:text-white truncate" title={coupleName}>
+                                                                {coupleName}
+                                                            </h3>
+                                                            <p className="text-[11px] text-primary/50 dark:text-white/40 font-light truncate mt-0.5">/{inv.slug}</p>
+                                                        </>
+                                                    ) : (
+                                                        <h3 className="font-serif text-base font-medium text-primary dark:text-white truncate" title={inv.slug}>
+                                                            {inv.slug}
+                                                        </h3>
+                                                    );
+                                                })()}
                                                 <div className="flex items-center gap-3 mt-1">
                                                     <p className="text-[11px] text-primary/40 dark:text-white/40 font-light">
                                                         {new Date(inv.updated_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
