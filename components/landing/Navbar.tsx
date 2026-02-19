@@ -25,6 +25,18 @@ export function Navbar() {
         { name: "Tentang Kami", href: "#about" },
     ];
 
+    const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        if (!href.startsWith("#")) return; // biarkan Next.js handle link halaman biasa
+        e.preventDefault();
+        setMobileMenuOpen(false);
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if (!el) return;
+        const navbarHeight = 20;
+        const top = el.getBoundingClientRect().top + window.scrollY - navbarHeight;
+        window.scrollTo({ top, behavior: "smooth" });
+    };
+
     return (
         <nav
             className={cn(
@@ -46,13 +58,14 @@ export function Navbar() {
                     <div className="hidden md:block">
                         <div className="ml-10 flex items-baseline space-x-8">
                             {navLinks.map((link) => (
-                                <Link
+                                <a
                                     key={link.name}
                                     href={link.href}
-                                    className="text-primary/80 dark:text-white/80 hover:text-primary dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                                    onClick={(e) => handleNavClick(e, link.href)}
+                                    className="text-primary/80 dark:text-white/80 hover:text-primary dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                                 >
                                     {link.name}
-                                </Link>
+                                </a>
                             ))}
                         </div>
                     </div>
@@ -82,14 +95,14 @@ export function Navbar() {
                 <div className="md:hidden glass-panel absolute w-full border-t border-white/20">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                         {navLinks.map((link) => (
-                            <Link
+                            <a
                                 key={link.name}
                                 href={link.href}
-                                className="text-primary block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/5"
-                                onClick={() => setMobileMenuOpen(false)}
+                                onClick={(e) => handleNavClick(e, link.href)}
+                                className="text-primary block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/5 cursor-pointer"
                             >
                                 {link.name}
-                            </Link>
+                            </a>
                         ))}
                         <div className="pt-4 pb-2">
                             <Button className="w-full bg-primary text-white">Masuk</Button>

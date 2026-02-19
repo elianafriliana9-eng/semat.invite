@@ -85,3 +85,7 @@ body {
   background: var(--color-background-dark);
   color: #e5e5e5;
 }
+
+html {
+  scroll-behavior: smooth;
+}
