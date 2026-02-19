@@ -54,4 +54,14 @@ export const themeShowcaseData: ThemeShowcaseItem[] = [
         isNew: true,
         isPremium: true,
     },
+    {
+        id: "aksara",
+        name: "Aksara",
+        category: "Classic",
+        description: "Cinematic dan teatrikal. Menonjolkan sisi puitis dengan tipografi kuat dan visual yang megah.",
+        thumbnail: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkJhhNGIPzRvdHCHnOD7hBoIG2BeMF1SHC5o00m74t2gyN4fcq6EAJ9alELW60VPslYrouB9_VC4OPWI8g2FpDlIoGxkk_By3oNOKnhnGgSlTqPYiGKP858GF5gB9N8gJ0dDO3SA5ut6Ctb6xcMKpAzS3HXufYtgq1wTvUN98rPQdVsFyx9deysju5wnwyW8GPu3By4JF0Y8kF5yx6OBOWw10JWiqAj-aZ3kJZ0MhGVtdX-B0yJoCuPZOMVO48qXLqd0YKIhUVbhU",
+        previewUrl: "/preview/aksara",
+        tags: ["cinematic", "poetic", "grand"],
+        isNew: true,
+    },
 ];

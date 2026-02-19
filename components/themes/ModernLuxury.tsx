@@ -43,7 +43,7 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
 
       if (isMusicPlaying) {
         audioRef.current.play().catch(() => {
-           // Silently handle autoplay block
+          // Silently handle autoplay block
         });
       } else {
         audioRef.current.pause();
@@ -166,7 +166,14 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
           </p>
 
           <div className="pt-4">
-            {countdownTarget && <Countdown targetDate={countdownTarget} />}
+            {countdownTarget && (
+              <Countdown
+                targetDate={countdownTarget}
+                textColor="#2D423F"
+                labelColor="#A89A82"
+                dividerColor="rgba(168, 154, 130, 0.3)"
+              />
+            )}
           </div>
         </div>
       </section>

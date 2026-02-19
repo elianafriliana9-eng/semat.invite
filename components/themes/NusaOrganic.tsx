@@ -293,7 +293,12 @@ export default function NusaOrganic({ data, id, isPreview, guestName }: ThemePro
                         {/* Countdown */}
                         {countdownTarget && (
                             <div className="mt-2">
-                                <Countdown targetDate={countdownTarget} />
+                                <Countdown
+                                    targetDate={countdownTarget}
+                                    textColor="white"
+                                    labelColor="rgba(255, 255, 255, 0.7)"
+                                    dividerColor="rgba(255, 255, 255, 0.2)"
+                                />
                             </div>
                         )}
 
