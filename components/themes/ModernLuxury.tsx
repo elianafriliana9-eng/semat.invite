@@ -4,12 +4,13 @@ import { ThemeProps } from "./types";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Music, Volume2, VolumeX } from "lucide-react";
 import { Countdown } from "./shared/Countdown";
 import { GuestBook } from "./shared/GuestBook";
+import { useBuilderStore } from "@/store/builderStore";
 
 export default function ModernLuxury({ data, id, isPreview, guestName }: ThemeProps) {
   const { couple, events } = data;
+  const { isMusicPlaying, setMusicPlaying } = useBuilderStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -20,16 +21,13 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
     : null;
 
   // Music Logic
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isOpen, setIsOpen] = useState(isPreview || false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleOpen = () => {
     setIsOpen(true);
-    if (data.music?.enabled && audioRef.current) {
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => console.log("Autoplay blocked:", err));
+    if (data.music?.enabled) {
+      setMusicPlaying(true);
     }
   };
 
@@ -39,36 +37,27 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
         audioRef.current = new Audio(data.music.url);
         audioRef.current.loop = true;
       } else if (audioRef.current.src !== data.music.url) {
-        const wasPlaying = isPlaying;
         audioRef.current.pause();
         audioRef.current.src = data.music.url;
-        if (wasPlaying) {
-          audioRef.current.play().catch(() => setIsPlaying(false));
-        }
+      }
+
+      if (isMusicPlaying) {
+        audioRef.current.play().catch(() => {
+           // Silently handle autoplay block
+        });
+      } else {
+        audioRef.current.pause();
       }
     } else if (audioRef.current) {
       audioRef.current.pause();
-      setIsPlaying(false);
     }
+  }, [data.music?.url, data.music?.enabled, isMusicPlaying]);
 
+  useEffect(() => {
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
+      if (audioRef.current) audioRef.current.pause();
     };
-  }, [data.music?.url, data.music?.enabled]);
-
-  const toggleMusic = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(() => alert("Klik di mana saja pada layar terlebih dahulu untuk mengizinkan musik diputar."));
-    }
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -586,70 +575,6 @@ export default function ModernLuxury({ data, id, isPreview, guestName }: ThemePr
             )}
           </div>
         </section>
-      )}
-
-      {/* Floating Music Controller */}
-      {data.music?.enabled && (
-        <div className={`${isPreview ? 'absolute' : 'fixed'} bottom-8 left-8 z-[100]`}>
-          <button
-            onClick={toggleMusic}
-            className="relative flex items-center justify-center w-12 h-12 bg-[#2D423F] text-[#F3E5D8] rounded-full shadow-2xl hover:scale-110 transition-transform group"
-          >
-            {/* Pulsing Aura */}
-            {isPlaying && (
-              <motion.div
-                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 bg-[#2D423F] rounded-full -z-10"
-              />
-            )}
-
-            <AnimatePresence mode="wait">
-              {isPlaying ? (
-                <motion.div
-                  key="playing"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  className="flex items-end gap-[2px] h-3"
-                >
-                  {[0, 1, 2].map((i) => (
-                    <motion.div
-                      key={i}
-                      animate={{ height: [4, 12, 4] }}
-                      transition={{
-                        duration: 0.6,
-                        repeat: Infinity,
-                        delay: i * 0.2,
-                        ease: "easeInOut"
-                      }}
-                      className="w-1 bg-[#F3E5D8] rounded-full"
-                    />
-                  ))}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="paused"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  className="relative"
-                >
-                  <Music className="w-5 h-5" />
-                  <motion.div
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    className="absolute inset-0 flex items-center justify-center"
-                  >
-                    <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#F3E5D8]/80 stroke-current stroke-2 fill-none">
-                      <line x1="24" y1="0" x2="0" y2="24" />
-                    </svg>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </button>
-        </div>
       )}
 
       {/* Placeholder for other sections */}

@@ -55,6 +55,14 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
             preview_image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDXN_kIPmI4M0j-BFBK-JG-tUupTCO64fMuhTu9S4-3CcDmSQflH3gu8xm803ViaMBbCcjHhIlZdj9SiO0eSyqglPGgDYE0vW1AWF1MhPyLDR811m4y-4gdciNgxY-ndxjxFbGUDDeYeXg9ym1VLyeUo_vjVjMfg9KdAxvufnk3dGO-JGAlAKcpelVIKE2zMadOkaYtbh7npDh67b6MLNYQ_e24Hbti_29xOpgqTUlNVNvzEIMoms5NupimcguTiQDb4gPi05NRjBM",
             is_active: true,
         },
+        {
+            id: "kromo-inggil",
+            name: "Kromo Inggil",
+            description: "Keagungan budaya Jawa dengan elemen Gunungan dan Batik.",
+            price: 0,
+            preview_image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1974&auto=format&fit=crop",
+            is_active: true,
+        },
     ];
 
     useEffect(() => {

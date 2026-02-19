@@ -8,6 +8,8 @@ import { Music } from "lucide-react";
 import { Countdown } from "./shared/Countdown";
 import { GuestBook } from "./shared/GuestBook";
 
+import { useBuilderStore } from "@/store/builderStore";
+
 // ─── NUSA Organic Theme ───
 // A modern organic wedding theme with warm terracotta tones,
 // organic blob shapes, and nature-inspired aesthetics.
@@ -24,10 +26,10 @@ const HERO_FALLBACK =
 
 export default function NusaOrganic({ data, id, isPreview, guestName }: ThemeProps) {
     const { couple, events } = data;
+    const { isMusicPlaying, setMusicPlaying } = useBuilderStore();
 
     // ─── State ───
     const [isOpen, setIsOpen] = useState(isPreview || false);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -42,11 +44,8 @@ export default function NusaOrganic({ data, id, isPreview, guestName }: ThemePro
     // ─── Music Logic ───
     const handleOpen = () => {
         setIsOpen(true);
-        if (data.music?.enabled && audioRef.current) {
-            audioRef.current
-                .play()
-                .then(() => setIsPlaying(true))
-                .catch((err) => console.log("Autoplay blocked:", err));
+        if (data.music?.enabled) {
+            setMusicPlaying(true);
         }
     };
 
@@ -56,38 +55,29 @@ export default function NusaOrganic({ data, id, isPreview, guestName }: ThemePro
                 audioRef.current = new Audio(data.music.url);
                 audioRef.current.loop = true;
             } else if (audioRef.current.src !== data.music.url) {
-                const wasPlaying = isPlaying;
                 audioRef.current.pause();
                 audioRef.current.src = data.music.url;
-                if (wasPlaying) {
-                    audioRef.current.play().catch(() => setIsPlaying(false));
-                }
+            }
+
+            if (isMusicPlaying) {
+                audioRef.current.play().catch(() => {
+                    // Autoplay fail handled by global controller
+                });
+            } else {
+                audioRef.current.pause();
             }
         } else if (audioRef.current) {
             audioRef.current.pause();
-            setIsPlaying(false);
         }
+    }, [data.music?.url, data.music?.enabled, isMusicPlaying]);
+
+    useEffect(() => {
         return () => {
             if (audioRef.current) {
                 audioRef.current.pause();
             }
         };
-    }, [data.music?.url, data.music?.enabled]);
-
-    const toggleMusic = () => {
-        if (!audioRef.current) return;
-        if (isPlaying) {
-            audioRef.current.pause();
-            setIsPlaying(false);
-        } else {
-            audioRef.current
-                .play()
-                .then(() => setIsPlaying(true))
-                .catch(() =>
-                    alert("Klik di mana saja pada layar terlebih dahulu untuk mengizinkan musik diputar.")
-                );
-        }
-    };
+    }, []);
 
     // ─── RSVP Submit ───
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -963,67 +953,6 @@ export default function NusaOrganic({ data, id, isPreview, guestName }: ThemePro
                 </p>
             </footer>
 
-            {/* ═══════════ FLOATING MUSIC CONTROLLER ═══════════ */}
-            {data.music?.enabled && (
-                <div className={`${isPreview ? "absolute" : "fixed"} bottom-8 left-8 z-[100]`}>
-                    <button
-                        onClick={toggleMusic}
-                        className="relative flex items-center justify-center w-12 h-12 text-white rounded-full shadow-2xl hover:scale-110 transition-transform group"
-                        style={{ backgroundColor: NUSA_PRIMARY }}
-                    >
-                        {/* Pulsing Aura */}
-                        {isPlaying && (
-                            <motion.div
-                                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                                className="absolute inset-0 rounded-full -z-10"
-                                style={{ backgroundColor: NUSA_PRIMARY }}
-                            />
-                        )}
-
-                        <AnimatePresence mode="wait">
-                            {isPlaying ? (
-                                <motion.div
-                                    key="playing"
-                                    initial={{ opacity: 0, scale: 0.5 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.5 }}
-                                    className="flex items-end gap-[2px] h-3"
-                                >
-                                    {[0, 1, 2].map((i) => (
-                                        <motion.div
-                                            key={i}
-                                            animate={{ height: [4, 12, 4] }}
-                                            transition={{
-                                                duration: 0.6,
-                                                repeat: Infinity,
-                                                delay: i * 0.2,
-                                                ease: "easeInOut",
-                                            }}
-                                            className="w-1 bg-white rounded-full"
-                                        />
-                                    ))}
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="paused"
-                                    initial={{ opacity: 0, scale: 0.5 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.5 }}
-                                    className="relative"
-                                >
-                                    <Music className="w-5 h-5" />
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <svg viewBox="0 0 24 24" className="w-7 h-7 text-white/80 stroke-current stroke-2 fill-none">
-                                            <line x1="24" y1="0" x2="0" y2="24" />
-                                        </svg>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </button>
-                </div>
-            )}
         </div>
     );
 }

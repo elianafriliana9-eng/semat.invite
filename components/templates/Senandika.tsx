@@ -2,7 +2,8 @@
 
 import React from "react";
 import { Heart, MapPin } from "lucide-react";
-import { InvitationData } from "@/store/builderStore";
+import { useBuilderStore, InvitationData } from "@/store/builderStore";
+import { useRef, useEffect } from "react";
 
 // Theme Colors
 const COLORS = {
@@ -18,10 +19,39 @@ interface SenandikaTemplateProps {
 }
 
 export default function SenandikaTemplate({ data }: SenandikaTemplateProps) {
+    const { isMusicPlaying } = useBuilderStore();
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
     // Dynamic Data
     const groomName = data?.couple?.groom?.name || "Arya";
     const brideName = data?.couple?.bride?.name || "Nirmana";
     const firstEvent = data?.events?.[0];
+
+    useEffect(() => {
+        if (data.music?.enabled && data.music?.url) {
+            if (!audioRef.current) {
+                audioRef.current = new Audio(data.music.url);
+                audioRef.current.loop = true;
+            } else if (audioRef.current.src !== data.music.url) {
+                audioRef.current.pause();
+                audioRef.current.src = data.music.url;
+            }
+
+            if (isMusicPlaying) {
+                audioRef.current.play().catch(() => {});
+            } else {
+                audioRef.current.pause();
+            }
+        } else if (audioRef.current) {
+            audioRef.current.pause();
+        }
+    }, [data.music?.url, data.music?.enabled, isMusicPlaying]);
+
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) audioRef.current.pause();
+        };
+    }, []);
     const date = firstEvent?.date ? new Date(firstEvent.date) : new Date("2024-12-12");
     const formattedDate = date.toLocaleDateString("id-ID", {
         day: "2-digit",

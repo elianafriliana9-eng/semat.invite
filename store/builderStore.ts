@@ -94,6 +94,13 @@ interface BuilderState {
   updateGiftAccount: (id: string, fields: Partial<InvitationData['gifts'][0]>) => void
   updateMetadata: (fields: Partial<InvitationData['metadata']>) => void
   setInitialData: (data: InvitationData, id?: string) => void
+  // UI States
+  previewKey: number
+  resetPreview: () => void
+  isMusicPlaying: boolean
+  setMusicPlaying: (playing: boolean) => void
+  isFullPreview: boolean
+  setFullPreview: (open: boolean) => void
 }
 
 const initialData: InvitationData = {
@@ -246,4 +253,11 @@ export const useBuilderStore = create<BuilderState>((set) => ({
     } : initialData, 
     invitationId: id 
   }),
+  // UI States
+  previewKey: 0,
+  resetPreview: () => set((state) => ({ previewKey: state.previewKey + 1 })),
+  isMusicPlaying: false,
+  setMusicPlaying: (playing) => set({ isMusicPlaying: playing }),
+  isFullPreview: false,
+  setFullPreview: (open) => set({ isFullPreview: open }),
 }))

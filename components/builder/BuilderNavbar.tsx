@@ -112,7 +112,10 @@ export function BuilderNavbar({ previewDevice, setPreviewDevice }: BuilderNavbar
                         <Monitor className="w-4 h-4" />
                     </button>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <button 
+                    onClick={() => useBuilderStore.getState().resetPreview()}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
                     <Eye className="w-4 h-4" />
                     Preview
                 </button>

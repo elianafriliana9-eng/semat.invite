@@ -43,4 +43,15 @@ export const themeShowcaseData: ThemeShowcaseItem[] = [
         tags: ["minimalist", "poetic", "elegant"],
         isNew: true,
     },
+    {
+        id: "kromo-inggil",
+        name: "Kromo Inggil",
+        category: "Classic",
+        description: "Keagungan budaya Jawa. Nuansa Royal Navy & Gold dengan elemen Gunungan dan Batik yang hidupi tradisi.",
+        thumbnail: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1974&auto=format&fit=crop",
+        previewUrl: "/preview/kromo-inggil",
+        tags: ["javanese", "royal", "cultural"],
+        isNew: true,
+        isPremium: true,
+    },
 ];
