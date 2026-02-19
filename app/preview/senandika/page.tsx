@@ -43,8 +43,13 @@ const mockData: InvitationData = {
     metadata: { isPaid: false, slug: "senandika-preview" }
 };
 
+import { useSearchParams } from "next/navigation";
+
 export default function SenandikaPreviewPage() {
+    const searchParams = useSearchParams();
+    const guestName = searchParams.get("to") || undefined;
+
     return (
-        <SenandikaTemplate data={mockData} />
+        <SenandikaTemplate data={mockData} guestName={guestName} />
     );
 }

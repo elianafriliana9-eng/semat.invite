@@ -48,11 +48,11 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
             is_active: true,
         },
         {
-            id: "senandika",
-            name: "Senandika",
-            description: "Puitis, elegan, dan penuh makna romantis.",
+            id: "aksara",
+            name: "Aksara",
+            description: "Cinematic, puitis, dan penuh makna mendalam.",
             price: 0,
-            preview_image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDXN_kIPmI4M0j-BFBK-JG-tUupTCO64fMuhTu9S4-3CcDmSQflH3gu8xm803ViaMBbCcjHhIlZdj9SiO0eSyqglPGgDYE0vW1AWF1MhPyLDR811m4y-4gdciNgxY-ndxjxFbGUDDeYeXg9ym1VLyeUo_vjVjMfg9KdAxvufnk3dGO-JGAlAKcpelVIKE2zMadOkaYtbh7npDh67b6MLNYQ_e24Hbti_29xOpgqTUlNVNvzEIMoms5NupimcguTiQDb4gPi05NRjBM",
+            preview_image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkJhhNGIPzRvdHCHnOD7hBoIG2BeMF1SHC5o00m74t2gyN4fcq6EAJ9alELW60VPslYrouB9_VC4OPWI8g2FpDlIoGxkk_By3oNOKnhnGgSlTqPYiGKP858GF5gB9N8gJ0dDO3SA5ut6Ctb6xcMKpAzS3HXufYtgq1wTvUN98rPQdVsFyx9deysju5wnwyW8GPu3By4JF0Y8kF5yx6OBOWw10JWiqAj-aZ3kJZ0MhGVtdX-B0yJoCuPZOMVO48qXLqd0YKIhUVbhU",
             is_active: true,
         },
         {

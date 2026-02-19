@@ -3,6 +3,7 @@
 import { useBuilderStore } from "@/store/builderStore";
 import { themeRegistry } from "@/components/themes";
 import { motion, AnimatePresence } from "framer-motion";
+import { PreviewIframe } from "./PreviewIframe";
 
 interface PreviewRendererProps {
     previewDevice: "mobile" | "desktop";
@@ -82,14 +83,16 @@ export function PreviewRenderer({ previewDevice }: PreviewRendererProps) {
                                     isolation: "isolate",
                                 }}
                             >
-                                {ThemeComponent && (
-                                    <ThemeComponent
-                                        data={data}
-                                        id={useBuilderStore.getState().invitationId}
-                                        isPreview={previewKey === 0}
-                                        guestName="Tamu Undangan"
-                                    />
-                                )}
+                                <PreviewIframe>
+                                    {ThemeComponent && (
+                                        <ThemeComponent
+                                            data={data}
+                                            id={useBuilderStore.getState().invitationId}
+                                            isPreview={previewKey === 0}
+                                            guestName="Tamu Undangan"
+                                        />
+                                    )}
+                                </PreviewIframe>
                             </div>
 
                             {/* Music icon inside phone */}
