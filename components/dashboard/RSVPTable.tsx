@@ -5,7 +5,6 @@ import { supabase } from "@/lib/supabase";
 import {
     Loader2,
     RefreshCw,
-    ChevronLeft,
     Download,
     Search,
     Users,
@@ -13,9 +12,9 @@ import {
     XCircle,
     Trash2,
     MessageSquare,
-    Check
+    Check,
+    UserCheck
 } from "lucide-react";
-import Link from "next/link";
 
 interface RSVPTableProps {
     invitationId: string;
@@ -50,16 +49,26 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
 
     const toggleCheckIn = async (id: string, currentStatus: boolean) => {
         try {
-            const { error } = await supabase
+            const { error, count } = await supabase
                 .from('rsvps')
                 .update({ is_checked_in: !currentStatus })
-                .eq('id', id);
+                .eq('id', id)
+                .select(); // Menggunakan select() untuk memastikan data terupdate bisa dicheck
 
             if (error) throw error;
-            setRsvps(prev => prev.map(item => item.id === id ? { ...item, is_checked_in: !currentStatus } : item));
-        } catch (error) {
+            
+            // Verifikasi apakah ada baris yang benar-benar terupdate
+            // Sebagaimana diatur oleh kebijakan RLS, update mungkin "sukses" tapi tidak mengubah baris apapun
+            const updatedData = await supabase.from('rsvps').select('is_checked_in').eq('id', id).single();
+            
+            if (updatedData.data?.is_checked_in === !currentStatus) {
+                setRsvps(prev => prev.map(item => item.id === id ? { ...item, is_checked_in: !currentStatus } : item));
+            } else {
+                throw new Error("Data tidak berubah di database. Pastikan kebijakan RLS (Row Level Security) mengizinkan UPDATE.");
+            }
+        } catch (error: any) {
             console.error('Error toggling check-in:', error);
-            alert("Gagal memperbarui status check-in. Pastikan kolom 'is_checked_in' sudah ada di database.");
+            alert(`Gagal memperbarui status: ${error.message || 'Error tidak diketahui'}`);
         }
     };
 
@@ -118,7 +127,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `RSVP_Pro_${invitationId}.csv`);
+        link.setAttribute("download", `RSVP_${invitationId}.csv`);
         link.click();
     };
 
@@ -128,71 +137,66 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
 
     return (
         <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                    {showBack && (
-                        <Link href="/dashboard" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 transition-colors">
-                            <ChevronLeft className="w-5 h-5" />
-                        </Link>
-                    )}
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">RSVP Management Pro</h2>
-                        <p className="text-sm text-gray-500">Kelola daftar tamu dan konfirmasi kehadiran secara profesional.</p>
-                    </div>
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={exportToCSV}
-                        disabled={rsvps.length === 0 || isLoading}
-                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#202423] border border-gray-200 dark:border-gray-800 rounded-lg text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm disabled:opacity-50"
-                    >
-                        <Download className="w-4 h-4 text-primary" />
-                        Export
-                    </button>
-                    <button
-                        onClick={fetchRsvps}
-                        className="p-2 bg-white dark:bg-[#202423] border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm"
-                    >
-                        <RefreshCw className={`w-4 h-4 text-gray-500 ${isLoading ? 'animate-spin' : ''}`} />
-                    </button>
-                </div>
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-3">
+                <button
+                    onClick={exportToCSV}
+                    disabled={rsvps.length === 0 || isLoading}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/70 dark:bg-white/5 backdrop-blur-sm border border-white/40 dark:border-white/10 rounded-full text-xs font-semibold text-primary dark:text-white hover:bg-white dark:hover:bg-white/10 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                </button>
+                <button
+                    onClick={fetchRsvps}
+                    disabled={isLoading}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/70 dark:bg-white/5 backdrop-blur-sm border border-white/40 dark:border-white/10 rounded-full text-xs font-semibold text-primary dark:text-white hover:bg-white dark:hover:bg-white/10 transition-all duration-300 shadow-sm disabled:opacity-50"
+                >
+                    <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                    Refresh
+                </button>
             </div>
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-[#202423] p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Konfirmasi</span>
-                        <Users className="w-4 h-4 text-blue-500" />
-                    </div>
-                    <p className="text-2xl font-bold">{stats.total}</p>
-                </div>
-                <div className="bg-white dark:bg-[#202423] p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Hadir</span>
-                        <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                        <p className="text-2xl font-bold">{stats.hadirCount}</p>
-                        <span className="text-xs text-gray-400">({stats.totalGuests} orang)</span>
-                    </div>
-                </div>
-                <div className="bg-white dark:bg-[#202423] p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Berhalangan</span>
-                        <XCircle className="w-4 h-4 text-red-500" />
-                    </div>
-                    <p className="text-2xl font-bold">{stats.tidakHadir}</p>
-                </div>
-                <div className="bg-white dark:bg-[#202423] p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Sudah Check-in</span>
-                        <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
-                            <Check className="w-3 h-3 text-primary" />
+                <div className="glass-panel rounded-2xl p-5 space-y-3 hover:-translate-y-0.5 transition-all duration-300">
+                    <div className="flex justify-between items-start">
+                        <span className="text-[10px] font-semibold text-primary/50 dark:text-white/50 uppercase tracking-wider">Total Konfirmasi</span>
+                        <div className="w-8 h-8 rounded-full bg-blue-100/60 dark:bg-blue-500/10 flex items-center justify-center">
+                            <Users className="w-4 h-4 text-blue-500" />
                         </div>
                     </div>
-                    <p className="text-2xl font-bold">
+                    <p className="text-3xl font-serif font-medium text-primary dark:text-white">{stats.total}</p>
+                </div>
+                <div className="glass-panel rounded-2xl p-5 space-y-3 hover:-translate-y-0.5 transition-all duration-300">
+                    <div className="flex justify-between items-start">
+                        <span className="text-[10px] font-semibold text-primary/50 dark:text-white/50 uppercase tracking-wider">Total Hadir</span>
+                        <div className="w-8 h-8 rounded-full bg-green-100/60 dark:bg-green-500/10 flex items-center justify-center">
+                            <CheckCircle2 className="w-4 h-4 text-green-500" />
+                        </div>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                        <p className="text-3xl font-serif font-medium text-primary dark:text-white">{stats.hadirCount}</p>
+                        <span className="text-xs text-primary/40 dark:text-white/40 font-light">({stats.totalGuests} orang)</span>
+                    </div>
+                </div>
+                <div className="glass-panel rounded-2xl p-5 space-y-3 hover:-translate-y-0.5 transition-all duration-300">
+                    <div className="flex justify-between items-start">
+                        <span className="text-[10px] font-semibold text-primary/50 dark:text-white/50 uppercase tracking-wider">Berhalangan</span>
+                        <div className="w-8 h-8 rounded-full bg-red-100/60 dark:bg-red-500/10 flex items-center justify-center">
+                            <XCircle className="w-4 h-4 text-red-500" />
+                        </div>
+                    </div>
+                    <p className="text-3xl font-serif font-medium text-primary dark:text-white">{stats.tidakHadir}</p>
+                </div>
+                <div className="glass-panel rounded-2xl p-5 space-y-3 hover:-translate-y-0.5 transition-all duration-300">
+                    <div className="flex justify-between items-start">
+                        <span className="text-[10px] font-semibold text-primary/50 dark:text-white/50 uppercase tracking-wider">Sudah Check-in</span>
+                        <div className="w-8 h-8 rounded-full bg-secondary/60 dark:bg-secondary/20 flex items-center justify-center">
+                            <UserCheck className="w-4 h-4 text-primary dark:text-secondary" />
+                        </div>
+                    </div>
+                    <p className="text-3xl font-serif font-medium text-primary dark:text-white">
                         {rsvps.filter(r => r.is_checked_in).length}
                     </p>
                 </div>
@@ -201,100 +205,120 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
             {/* Toolbar */}
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-grow">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Search className="text-primary/40 dark:text-white/40 w-4 h-4" />
+                    </div>
                     <input
                         type="text"
                         placeholder="Cari nama tamu..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#202423] border border-gray-200 dark:border-gray-800 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                        className="block w-full pl-11 pr-4 py-2.5 bg-white/70 dark:bg-white/5 backdrop-blur-sm border border-white/40 dark:border-white/10 rounded-full text-primary dark:text-white placeholder-primary/40 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 text-sm transition-all duration-300 shadow-sm"
                     />
                 </div>
                 <div className="flex gap-2">
-                    <select
-                        value={filterAttendance}
-                        onChange={(e) => setFilterAttendance(e.target.value as any)}
-                        className="px-4 py-2 bg-white dark:bg-[#202423] border border-gray-200 dark:border-gray-800 rounded-lg outline-none text-sm focus:border-primary"
-                    >
-                        <option value="all">Semua Kehadiran</option>
-                        <option value="Hadir">Hadir</option>
-                        <option value="Tidak Hadir">Tidak Hadir</option>
-                    </select>
+                    {(['all', 'Hadir', 'Tidak Hadir'] as const).map((filter) => (
+                        <button
+                            key={filter}
+                            onClick={() => setFilterAttendance(filter)}
+                            className={`px-4 py-2.5 rounded-full text-xs font-semibold transition-all duration-300 ${
+                                filterAttendance === filter
+                                    ? 'bg-primary text-white shadow-md shadow-primary/20'
+                                    : 'bg-white/70 dark:bg-white/5 backdrop-blur-sm border border-white/40 dark:border-white/10 text-primary/70 dark:text-white/70 hover:bg-white dark:hover:bg-white/10'
+                            }`}
+                        >
+                            {filter === 'all' ? 'Semua' : filter}
+                        </button>
+                    ))}
                 </div>
             </div>
 
             {/* Table Container */}
-            <div className="bg-white dark:bg-[#202423] rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+            <div className="glass-panel rounded-2xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse min-w-[900px]">
                         <thead>
-                            <tr className="bg-gray-50/50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800">
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Informasi Tamu</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Kehadiran</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Pesan / Ucapan</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Waktu</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Check-in</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-gray-400">Aksi</th>
+                            <tr className="bg-primary/[0.03] dark:bg-white/[0.03] border-b border-primary/5 dark:border-white/5">
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-primary/40 dark:text-white/40">Informasi Tamu</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-primary/40 dark:text-white/40">Kehadiran</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-primary/40 dark:text-white/40">Pesan / Ucapan</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-primary/40 dark:text-white/40">Waktu</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-primary/40 dark:text-white/40">Check-in</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-primary/40 dark:text-white/40">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                        <tbody className="divide-y divide-primary/5 dark:divide-white/5">
                             {isLoading && rsvps.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="py-20 text-center">
-                                        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-primary/40" />
-                                        <p className="text-xs text-gray-400">Menarik data dari server...</p>
+                                        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3 text-primary/30 dark:text-white/30" />
+                                        <p className="text-xs text-primary/40 dark:text-white/40 font-light">Menarik data dari server...</p>
                                     </td>
                                 </tr>
                             ) : filteredRsvps.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="py-20 text-center text-gray-400 italic text-sm">
-                                        {searchTerm || filterAttendance !== 'all' ? 'Tidak ada data yang cocok dengan pencarian.' : 'Belum ada konfirmasi tamu.'}
+                                    <td colSpan={6} className="py-20 text-center">
+                                        <div className="w-16 h-16 bg-secondary/30 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <Users className="w-7 h-7 text-primary/20 dark:text-white/20" />
+                                        </div>
+                                        <p className="text-sm text-primary/40 dark:text-white/40 font-light">
+                                            {searchTerm || filterAttendance !== 'all' ? 'Tidak ada data yang cocok dengan pencarian.' : 'Belum ada konfirmasi tamu.'}
+                                        </p>
                                     </td>
                                 </tr>
                             ) : (
                                 filteredRsvps.map((rsvp) => (
-                                    <tr key={rsvp.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/10 transition-colors group">
+                                    <tr key={rsvp.id} className="hover:bg-primary/[0.02] dark:hover:bg-white/[0.02] transition-colors group">
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize">{rsvp.name}</span>
-                                                <span className="text-[10px] text-gray-400 font-mono tracking-tighter">{rsvp.phone || 'Tanpa Telepon'}</span>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-9 h-9 rounded-full bg-secondary/40 dark:bg-white/10 flex items-center justify-center flex-shrink-0">
+                                                    <span className="text-xs font-bold text-primary dark:text-white uppercase">
+                                                        {(rsvp.name || '?').charAt(0)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-semibold text-primary dark:text-white capitalize">{rsvp.name}</span>
+                                                    <span className="text-[10px] text-primary/40 dark:text-white/40 font-light">{rsvp.phone || 'Tanpa Telepon'}</span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col gap-1">
-                                                <span className={`inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[9px] font-black tracking-tighter ${rsvp.attendance === 'yes' || rsvp.attendance === 'Hadir'
-                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
-                                                        : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
+                                            <div className="flex flex-col gap-1.5">
+                                                <span className={`inline-flex items-center w-fit px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${rsvp.attendance === 'yes' || rsvp.attendance === 'Hadir'
+                                                        ? 'bg-green-100/60 text-green-700 dark:bg-green-500/10 dark:text-green-400'
+                                                        : 'bg-red-100/60 text-red-700 dark:bg-red-500/10 dark:text-red-400'
                                                     }`}>
                                                     {rsvp.attendance === 'yes' || rsvp.attendance === 'Hadir' ? 'HADIR' : 'ABSEN'}
                                                 </span>
-                                                <span className="text-[9px] text-gray-500 ml-1 font-medium">{rsvp.guests_count || 1} Person</span>
+                                                <span className="text-[10px] text-primary/40 dark:text-white/40 font-light">{rsvp.guests_count || 1} Orang</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed max-w-[200px] line-clamp-2" title={rsvp.message}>
-                                                {rsvp.message || '-'}
+                                            <p className="text-xs text-primary/60 dark:text-white/50 leading-relaxed max-w-[200px] line-clamp-2 font-light" title={rsvp.message}>
+                                                {rsvp.message || <span className="italic text-primary/30 dark:text-white/20">Tidak ada pesan</span>}
                                             </p>
                                         </td>
-                                        <td className="px-6 py-4 text-[10px] text-gray-400">
-                                            {new Date(rsvp.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+                                        <td className="px-6 py-4">
+                                            <span className="text-[11px] text-primary/40 dark:text-white/40 font-light">
+                                                {new Date(rsvp.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <button
                                                 onClick={() => toggleCheckIn(rsvp.id, rsvp.is_checked_in)}
-                                                className={`w-10 h-5 rounded-full relative transition-all duration-300 ${rsvp.is_checked_in ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'}`}
+                                                className={`w-11 h-6 rounded-full relative transition-all duration-300 ${rsvp.is_checked_in ? 'bg-primary shadow-inner' : 'bg-primary/15 dark:bg-white/10'}`}
                                             >
-                                                <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-sm ${rsvp.is_checked_in ? 'left-[22px]' : 'left-0.5'}`} />
+                                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-sm ${rsvp.is_checked_in ? 'left-[24px]' : 'left-1'}`} />
                                             </button>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                 {rsvp.phone && (
                                                     <a
                                                         href={`https://wa.me/${rsvp.phone.replace(/[^0-9]/g, '')}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="p-1.5 hover:bg-green-100 dark:hover:bg-green-900/30 rounded text-green-600 transition-colors"
+                                                        className="p-2 hover:bg-green-100/60 dark:hover:bg-green-500/10 rounded-full text-green-600 transition-all"
                                                         title="WhatsApp Tamu"
                                                     >
                                                         <MessageSquare className="w-4 h-4" />
@@ -302,7 +326,7 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                                                 )}
                                                 <button
                                                     onClick={() => deleteRSVP(rsvp.id)}
-                                                    className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded text-red-600 transition-colors"
+                                                    className="p-2 hover:bg-red-100/60 dark:hover:bg-red-500/10 rounded-full text-red-500 transition-all"
                                                     title="Hapus Konfirmasi"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -315,9 +339,9 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
                         </tbody>
                     </table>
                 </div>
-                <div className="bg-gray-50/50 dark:bg-gray-800/30 px-6 py-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
-                    <span className="text-[10px] text-gray-400 font-medium">© 2026 KanvasKita - Pro Dashboard</span>
-                    <span className="text-[10px] text-gray-400 font-medium">Menampilkan {filteredRsvps.length} dari {rsvps.length} data</span>
+                <div className="bg-primary/[0.02] dark:bg-white/[0.02] px-6 py-3 border-t border-primary/5 dark:border-white/5 flex justify-between items-center">
+                    <span className="text-[10px] text-primary/30 dark:text-white/25 font-light tracking-wider">© {new Date().getFullYear()} KanvasKita</span>
+                    <span className="text-[10px] text-primary/30 dark:text-white/25 font-light">Menampilkan {filteredRsvps.length} dari {rsvps.length} data</span>
                 </div>
             </div>
         </div>
