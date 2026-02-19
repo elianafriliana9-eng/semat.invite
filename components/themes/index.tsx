@@ -5,6 +5,8 @@ import NusaOrganic from "./NusaOrganic";
 import KromoInggil from "./KromoInggil";
 import Senandika from "@/components/templates/Senandika";
 import Aksara from "@/components/templates/Aksara";
+import Rona from "@/components/templates/Rona";
+import ParahyanganBold from "@/components/templates/ParahyanganBold";
 
 export const themeRegistry: Record<string, React.ComponentType<ThemeProps>> = {
   "modern-luxury": ModernLuxury,
@@ -13,4 +15,6 @@ export const themeRegistry: Record<string, React.ComponentType<ThemeProps>> = {
   "kromo-inggil": KromoInggil,
   "senandika": Senandika,
   "aksara": Aksara,
+  "rona": Rona,
+  "parahyangan-bold": ParahyanganBold,
 };

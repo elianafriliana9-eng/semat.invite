@@ -64,4 +64,26 @@ export const themeShowcaseData: ThemeShowcaseItem[] = [
         tags: ["cinematic", "poetic", "grand"],
         isNew: true,
     },
+    {
+        id: "rona",
+        name: "Rona",
+        category: "Modern",
+        description: "Ethereal dan romantis. Desain puitis dengan lapisan elemen mengambang dan palet warna pastel yang lembut.",
+        thumbnail: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop",
+        previewUrl: "/preview/rona",
+        tags: ["ethereal", "romantic", "dreamy"],
+        isNew: true,
+        isPremium: true,
+    },
+    {
+        id: 'parahyangan-bold',
+        name: 'Parahyangan',
+        category: 'Classic',
+        description: 'Soft Sundanese Elegance dengan estetika muted dan aristokrat.',
+        thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000&auto=format&fit=crop',
+        previewUrl: '/preview/parahyangan-bold',
+        tags: ['Traditional', 'Sundanese', 'Elegant', 'Signature'],
+        isPremium: true,
+        isNew: true
+    }
 ];

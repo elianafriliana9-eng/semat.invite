@@ -63,6 +63,22 @@ export function EditorPanel({ activeTab }: EditorPanelProps) {
             preview_image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1974&auto=format&fit=crop",
             is_active: true,
         },
+        {
+            id: "rona",
+            name: "Rona",
+            description: "Ethereal, dreamy, dan sangat romantis.",
+            price: 0,
+            preview_image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop",
+            is_active: true,
+        },
+        {
+            id: "parahyangan-bold",
+            name: "Parahyangan",
+            description: "Soft Sundanese Elegance. Muted, aristokrat, dan sangat mewah.",
+            price: 0,
+            preview_image: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000&auto=format&fit=crop",
+            is_active: true,
+        },
     ];
 
     useEffect(() => {
