@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Wedding of Ahmad & Siti - Digital Invitation</title>
+    <!-- Tailwind CSS with plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400&family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap"
+        rel="stylesheet" />
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Screen 1 Styles */
+        .gold-foil-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .floating-envelope {
+            perspective: 1000px;
+            transition: transform 0.1s ease-out;
+        }
+
+        .gold-button {
+            position: relative;
+            background: #fff;
+            border: 2px solid transparent;
+            background-image: linear-gradient(white, white), radial-gradient(circle at top left, #bf953f, #fcf6ba, #b38728);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .gold-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(183, 148, 62, 0.3);
+        }
+
+        .petal {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 150% 0 150% 0;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Screen 2 Styles */
+        .font-serif-elegant {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+    </style>
+
+    <!-- React and Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body class="bg-stone-50 dark:bg-stone-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate } = ReactRouterDOM;
+
+        // --- Shared Components ---
+
+        const PetalsEffect = () => {
+            const containerRef = useRef(null);
+
+            useEffect(() => {
+                const container = containerRef.current;
+                const petalCount = 15;
+                const activePetals = [];
+
+                const createPetal = () => {
+                    const petal = document.createElement('div');
+                    petal.classList.add('petal');
+                    const size = Math.random() * 10 + 10 + 'px';
+                    petal.style.width = size;
+                    petal.style.height = size;
+                    petal.style.left = Math.random() * 100 + 'vw';
+                    petal.style.top = '-20px';
+
+                    const duration = Math.random() * 5 + 10 + 's';
+                    const delay = Math.random() * 5 + 's';
+                    petal.style.transition = `transform ${duration} linear ${delay}, opacity ${duration} linear ${delay}`;
+
+                    container.appendChild(petal);
+                    activePetals.push(petal);
+
+                    setTimeout(() => {
+                        petal.style.transform = `translate(${Math.random() * 200 - 100}px, ${window.innerHeight + 50}px) rotate(${Math.random() * 720}deg)`;
+                        petal.style.opacity = '0';
+                    }, 100);
+
+                    setTimeout(() => {
+                        petal.remove();
+                        createPetal();
+                    }, 15000);
+                };
+
+                for (let i = 0; i < petalCount; i++) {
+                    setTimeout(createPetal, i * 1000);
+                }
+
+                return () => {
+                    activePetals.forEach(p => p.remove());
+                };
+            }, []);
+
+            return <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 1 }} />;
+        };
+
+        // --- Screen 1: Landing Page ---
+
+        const LandingPage = () => {
+            const navigate = useNavigate();
+            const envelopeRef = useRef(null);
+
+            useEffect(() => {
+                const handleMouseMove = (e) => {
+                    if (envelopeRef.current) {
+                        const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                        const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                        envelopeRef.current.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+                    }
+                };
+                window.addEventListener('mousemove', handleMouseMove);
+                return () => window.removeEventListener('mousemove', handleMouseMove);
+            }, []);
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-stone-50">
+                    {/* Background */}
+                    <div className="fixed inset-0 z-[-2] transform scale-110 blur-[8px]"
+                        style={{
+                            background: `linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&q=80&w=1920')`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    />
+                    <div className="fixed inset-0 z-[-1] pointer-events-none"
+                        style={{ background: 'radial-gradient(circle at center, transparent 0%, rgba(255,255,255,0.4) 100%)' }}
+                    />
+
+                    <PetalsEffect />
+
+                    <header className="text-center z-10 mb-12 px-4">
+                        <p className="uppercase tracking-[0.3em] text-stone-500 text-xs mb-4 font-light">You are cordially invited to</p>
+                        <h1 className="text-5xl md:text-7xl text-stone-800 font-light leading-tight font-serif" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+                            The Wedding of <br />
+                            <span className="font-semibold italic">Ahmad & Siti</span>
+                        </h1>
+                    </header>
+
+                    <main className="relative z-10 flex flex-col items-center">
+                        <div
+                            ref={envelopeRef}
+                            className="floating-envelope w-[320px] h-[220px] md:w-[450px] md:h-[300px] cursor-pointer group"
+                            onClick={() => navigate('/invitation')}
+                        >
+                            <div className="relative w-full h-full bg-[#fdfaf5] shadow-2xl rounded-sm border border-stone-200 overflow-hidden"
+                                style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuBiYThhLhXzxLzpKBE0C1yo2ZHb590I6tS6fN-xvYArP65KRMXHeulx5WVZl1LAfpZA8LYLKHjf24SuSJ5aCcuklIlIqjNZaWZcMpeF8sZtLD82WzEDp1A0PYMr5IQgGBcLoM7totJSdxuPX92Aezxd5RKmlDORboDDLqRfxNdDR1bJaP9oWvcQwiYOBS_9YG7aC5qnHtHpAujy5NL5gvWxYJaqRxP3iXy_kyapLw6K0C9Qs86tGymeot7hYLGHNjSp8hUFe2V7kXs')` }}>
+                                <div className="absolute top-0 left-0 w-full h-full border-t-[110px] md:border-t-[150px] border-t-stone-100/80 border-l-[160px] md:border-l-[225px] border-l-transparent border-r-[160px] md:border-r-[225px] border-r-transparent z-10 shadow-sm" />
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center">
+                                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] shadow-lg flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500">
+                                        <span className="text-stone-800/80 font-serif text-xl md:text-2xl font-bold italic">AS</span>
+                                        <div className="absolute -top-1 -left-1 w-full h-full border-4 border-[#b38728]/30 rounded-full" />
+                                    </div>
+                                </div>
+                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] h-4 bg-white shadow-inner" />
+                            </div>
+                        </div>
+
+                        <div className="mt-16">
+                            <button
+                                onClick={() => navigate('/invitation')}
+                                className="gold-button px-10 py-4 text-stone-700 tracking-[0.2em] font-medium uppercase text-sm"
+                            >
+                                Open Invitation
+                            </button>
+                        </div>
+                    </main>
+
+                    <footer className="absolute bottom-8 text-center z-10">
+                        <p className="text-stone-500 font-light tracking-widest text-sm uppercase">Saturday, 24 August 2024</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        // --- Screen 2: 3D Invitation Scene ---
+
+        const InvitationPage = () => {
+            const canvasRef = useRef(null);
+            const [isPlaying, setIsPlaying] = useState(false);
+            const navigate = useNavigate();
+
+            useEffect(() => {
+                let scene, camera, renderer, rings, book, petals = [];
+                const container = canvasRef.current;
+
+                const init = () => {
+                    scene = new THREE.Scene();
+                    scene.background = new THREE.Color(0xF9F9F7);
+                    scene.fog = new THREE.FogExp2(0xF9F9F7, 0.05);
+
+                    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    camera.position.set(0, 2, 5);
+
+                    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    container.appendChild(renderer.domElement);
+
+                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                    scene.add(ambientLight);
+
+                    const spotLight = new THREE.SpotLight(0xD4AF37, 1);
+                    spotLight.position.set(5, 10, 5);
+                    scene.add(spotLight);
+
+                    const floorGeometry = new THREE.PlaneGeometry(20, 20);
+                    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xE8E8E2, roughness: 0.8 });
+                    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+                    floor.rotation.x = -Math.PI / 2;
+                    scene.add(floor);
+
+                    const ringGroup = new THREE.Group();
+                    const ringGeom = new THREE.TorusGeometry(0.3, 0.04, 16, 100);
+                    const ringMat = new THREE.MeshStandardMaterial({ color: 0xD4AF37, metalness: 1, roughness: 0.1 });
+                    const ring1 = new THREE.Mesh(ringGeom, ringMat);
+                    const ring2 = new THREE.Mesh(ringGeom, ringMat);
+                    ring2.position.x = 0.25;
+                    ring2.rotation.y = 0.5;
+                    ringGroup.add(ring1, ring2);
+                    ringGroup.position.set(-1.5, 0.8, 1);
+                    rings = ringGroup;
+                    scene.add(ringGroup);
+
+                    const cushionGeom = new THREE.BoxGeometry(1.2, 0.3, 1.2);
+                    const cushionMat = new THREE.MeshStandardMaterial({ color: 0x4A5D4E });
+                    const cushion = new THREE.Mesh(cushionGeom, cushionMat);
+                    cushion.position.set(-1.3, 0.6, 1);
+                    scene.add(cushion);
+
+                    const bookGroup = new THREE.Group();
+                    const pageGeom = new THREE.BoxGeometry(1.5, 0.05, 1);
+                    const pageMat = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
+                    const leftPage = new THREE.Mesh(pageGeom, pageMat);
+                    leftPage.position.x = -0.75;
+                    leftPage.rotation.z = -0.1;
+                    const rightPage = new THREE.Mesh(pageGeom, pageMat);
+                    rightPage.position.x = 0.75;
+                    rightPage.rotation.z = 0.1;
+                    bookGroup.add(leftPage, rightPage);
+                    bookGroup.position.set(1.5, 0.7, 1);
+                    bookGroup.rotation.y = -0.4;
+                    book = bookGroup;
+                    scene.add(bookGroup);
+
+                    const petalGeom = new THREE.PlaneGeometry(0.1, 0.1);
+                    const petalMat = new THREE.MeshBasicMaterial({ color: 0xFFD1DC, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
+                    for (let i = 0; i < 100; i++) {
+                        const petal = new THREE.Mesh(petalGeom, petalMat);
+                        petal.position.set(Math.random() * 10 - 5, Math.random() * 5, Math.random() * 10 - 5);
+                        petals.push(petal);
+                        scene.add(petal);
+                    }
+                };
+
+                const animate = () => {
+                    requestAnimationFrame(animate);
+                    if (rings) rings.rotation.y += 0.01;
+                    if (book) book.position.y = 0.7 + Math.sin(Date.now() * 0.002) * 0.05;
+                    petals.forEach(p => {
+                        p.position.y -= 0.01;
+                        if (p.position.y < 0) p.position.y = 5;
+                        p.rotation.x += 0.01;
+                    });
+                    camera.position.x += (Math.sin(Date.now() * 0.0005) * 0.005);
+                    camera.lookAt(0, 1, 0);
+                    renderer.render(scene, camera);
+                };
+
+                const handleResize = () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                };
+
+                init();
+                animate();
+                window.addEventListener('resize', handleResize);
+
+                return () => {
+                    window.removeEventListener('resize', handleResize);
+                    container.innerHTML = '';
+                };
+            }, []);
+
+            return (
+                <div className="relative w-full h-screen overflow-hidden">
+                    <div ref={canvasRef} id="canvas-container" />
+
+                    <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-8 md:p-12 z-10">
+                        <header className="flex justify-between items-start pointer-events-auto">
+                            <div className="text-sage-800">
+                                <p className="font-cinzel tracking-[0.3em] text-xs uppercase text-[#B5BAA1]">The Wedding of</p>
+                                <h1 className="font-serif-elegant text-4xl md:text-5xl text-[#3A4D39] mt-2 italic">Ahmad & Siti</h1>
+                            </div>
+                            <button
+                                onClick={() => setIsPlaying(!isPlaying)}
+                                className={`glass-morphism w-12 h-12 rounded-full flex items-center justify-center transition-all ${isPlaying ? 'bg-[#D4AF37]/40 text-[#3A4D39]' : 'text-[#D4AF37]'}`}
+                            >
+                                <span className="material-symbols-outlined">{isPlaying ? 'music_note' : 'music_off'}</span>
+                            </button>
+                        </header>
+
+                        <div className="flex-1 flex items-center justify-center">
+                            <div className="text-center opacity-60 animate-pulse">
+                                <p className="font-light tracking-widest text-xs uppercase text-[#3A4D39]">Click & Drag to Explore Our World</p>
+                            </div>
+                        </div>
+
+                        <footer className="flex flex-col md:flex-row justify-between items-end gap-6 pointer-events-auto">
+                            <div
+                                onClick={() => alert("Loading Our Story...")}
+                                className="group flex items-center gap-4 bg-white/40 p-4 rounded-lg backdrop-blur-sm cursor-pointer border-l-2 border-[#D4AF37] hover:bg-white/60 transition-all"
+                            >
+                                <div className="w-10 h-10 flex items-center justify-center text-[#D4AF37]">
+                                    <span className="material-symbols-outlined text-3xl">auto_stories</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-cinzel text-sm font-bold text-[#3A4D39]">OUR STORY</h3>
+                                    <p className="text-[10px] uppercase tracking-tighter text-[#3A4D39]/70">Flip to read</p>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-end gap-4">
+                                <div
+                                    onClick={() => alert("Opening Map: Grand Ballroom, Palace Hotel")}
+                                    className="group animate-float cursor-pointer text-right flex items-center gap-3"
+                                >
+                                    <span className="text-xs font-cinzel tracking-widest text-[#3A4D39] group-hover:text-[#D4AF37] transition-colors uppercase">Grand Ballroom</span>
+                                    <div className="w-12 h-12 glass-morphism rounded-xl flex items-center justify-center text-[#D4AF37] group-hover:scale-110 transition-transform">
+                                        <span className="material-symbols-outlined">location_on</span>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-cinzel text-lg text-[#3A4D39]">SAVE THE DATE</p>
+                                    <p className="font-serif-elegant italic text-2xl text-[#D4AF37]">October 24, 2024</p>
+                                </div>
+                                <button
+                                    onClick={() => navigate('/')}
+                                    className="text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-600 underline"
+                                >
+                                    Back to Entrance
+                                </button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main App Component ---
+
+        const App = () => {
+            return (
+                <MemoryRouter>
+                    <Routes>
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/invitation" element={<InvitationPage />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

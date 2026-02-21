@@ -69,8 +69,8 @@ const mockData: InvitationData = {
         }
     ],
     gifts: [
-        { bankName: "Bank BCA", accountNumber: "1234567890", accountHolder: "Arya Wijaya" },
-        { bankName: "Bank Mandiri", accountNumber: "0987654321", accountHolder: "Nirmana Putri" }
+        { id: "1", bankName: "Bank BCA", accountNumber: "1234567890", accountHolder: "Arya Wijaya" },
+        { id: "2", bankName: "Bank Mandiri", accountNumber: "0987654321", accountHolder: "Nirmana Putri" }
     ],
     metadata: { isPaid: false, slug: "rona-preview" }
 };
