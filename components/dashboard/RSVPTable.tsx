@@ -1,51 +1,37 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import {
     Loader2,
-    RefreshCw,
-    Download,
     Search,
     Users,
     CheckCircle2,
     XCircle,
     Trash2,
     MessageSquare,
-    Check,
     UserCheck
 } from "lucide-react";
 
 interface RSVPTableProps {
     invitationId: string;
     showBack?: boolean;
+    rsvps: any[];
+    isLoading: boolean;
+    onRefresh: () => void;
+    setRsvps: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
-    const [rsvps, setRsvps] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+export function RSVPTable({ 
+    invitationId, 
+    showBack = false, 
+    rsvps, 
+    isLoading, 
+    onRefresh, 
+    setRsvps 
+}: RSVPTableProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterAttendance, setFilterAttendance] = useState<"all" | "Hadir" | "Tidak Hadir">("all");
-
-    const fetchRsvps = async () => {
-        if (!invitationId) return;
-        setIsLoading(true);
-
-        try {
-            const { data, error } = await supabase
-                .from('rsvps')
-                .select('*')
-                .eq('invitation_id', invitationId)
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            setRsvps(data || []);
-        } catch (error) {
-            console.error('Error fetching RSVPs:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const toggleCheckIn = async (id: string, currentStatus: boolean) => {
         try {
@@ -108,54 +94,9 @@ export function RSVPTable({ invitationId, showBack = false }: RSVPTableProps) {
         });
     }, [rsvps, searchTerm, filterAttendance]);
 
-    const exportToCSV = () => {
-        if (rsvps.length === 0) return;
-
-        const headers = ["Nama Tamu", "Status Kehadiran", "Jumlah Tamu", "Telepon", "Pesan/Ucapan", "Check-in", "Waktu Konfirmasi"];
-        const rows = rsvps.map(rsvp => [
-            rsvp.name,
-            rsvp.attendance === 'yes' || rsvp.attendance === 'Hadir' ? 'Hadir' : 'Tidak Hadir',
-            rsvp.guests_count || 1,
-            rsvp.phone || '-',
-            `"${(rsvp.message || '-').replace(/"/g, '""')}"`,
-            rsvp.is_checked_in ? 'Ya' : 'Tidak',
-            new Date(rsvp.created_at).toLocaleString('id-ID')
-        ]);
-
-        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `RSVP_${invitationId}.csv`);
-        link.click();
-    };
-
-    useEffect(() => {
-        fetchRsvps();
-    }, [invitationId]);
 
     return (
         <div className="space-y-8">
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3">
-                <button
-                    onClick={exportToCSV}
-                    disabled={rsvps.length === 0 || isLoading}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/70 dark:bg-white/5 backdrop-blur-sm border border-white/40 dark:border-white/10 rounded-full text-xs font-semibold text-primary dark:text-white hover:bg-white dark:hover:bg-white/10 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <Download className="w-4 h-4" />
-                    Export CSV
-                </button>
-                <button
-                    onClick={fetchRsvps}
-                    disabled={isLoading}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/70 dark:bg-white/5 backdrop-blur-sm border border-white/40 dark:border-white/10 rounded-full text-xs font-semibold text-primary dark:text-white hover:bg-white dark:hover:bg-white/10 transition-all duration-300 shadow-sm disabled:opacity-50"
-                >
-                    <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-                    Refresh
-                </button>
-            </div>
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

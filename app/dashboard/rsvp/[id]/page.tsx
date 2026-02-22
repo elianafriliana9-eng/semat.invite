@@ -3,9 +3,10 @@
 import { RSVPTable } from "@/components/dashboard/RSVPTable";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Sparkles, ArrowLeft, User, Settings, LogOut, Crown } from "lucide-react";
+import { Sparkles, ArrowLeft, User, Settings, LogOut, Crown, Download, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { utils, writeFile } from "xlsx";
 
 export default function RSVPDashboardPage() {
     const params = useParams();
@@ -13,6 +14,53 @@ export default function RSVPDashboardPage() {
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
     const [userProfile, setUserProfile] = useState<any>(null);
+    const [rsvps, setRsvps] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchRsvps = async () => {
+        if (!id) return;
+        setIsLoading(true);
+
+        try {
+            const { data, error } = await supabase
+                .from('rsvps')
+                .select('*')
+                .eq('invitation_id', id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setRsvps(data || []);
+        } catch (error) {
+            console.error('Error fetching RSVPs:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const exportToExcel = () => {
+        if (rsvps.length === 0) return;
+
+        const data = rsvps.map(rsvp => ({
+            "Nama Tamu": rsvp.name,
+            "Status Kehadiran": rsvp.attendance === 'yes' || rsvp.attendance === 'Hadir' ? 'Hadir' : 'Tidak Hadir',
+            "Jumlah Tamu": rsvp.guests_count || 1,
+            "Telepon": rsvp.phone || '-',
+            "Pesan/Ucapan": rsvp.message || '-',
+            "Check-in": rsvp.is_checked_in ? 'Ya' : 'Tidak',
+            "Waktu Konfirmasi": new Date(rsvp.created_at).toLocaleString('id-ID')
+        }));
+
+        const worksheet = utils.json_to_sheet(data);
+        const workbook = utils.book_new();
+        utils.book_append_sheet(workbook, worksheet, "RSVP List");
+
+        const wscols = [
+            { wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 40 }, { wch: 10 }, { wch: 25 },
+        ];
+        worksheet["!cols"] = wscols;
+
+        writeFile(workbook, `RSVP_${id}.xlsx`);
+    };
 
     useEffect(() => {
         const getSession = async () => {
@@ -28,7 +76,8 @@ export default function RSVPDashboardPage() {
             }
         };
         getSession();
-    }, []);
+        fetchRsvps();
+    }, [id]);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -105,21 +154,51 @@ export default function RSVPDashboardPage() {
                     <div className="mb-10">
                         <Link
                             href="/dashboard"
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur-sm border border-white/40 dark:border-white/10 text-primary dark:text-white text-xs font-semibold tracking-wide uppercase mb-4 shadow-sm hover:bg-white dark:hover:bg-white/15 transition-all"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur-sm border border-white/40 dark:border-white/10 text-primary dark:text-white text-xs font-semibold tracking-wide uppercase mb-8 shadow-sm hover:bg-white dark:hover:bg-white/15 transition-all"
                         >
                             <ArrowLeft className="w-3.5 h-3.5" />
                             Kembali ke Dashboard
                         </Link>
-                        <h1 className="font-serif text-3xl lg:text-4xl font-medium text-primary dark:text-white tracking-tight mb-2">
-                            RSVP Manager
-                        </h1>
-                        <p className="text-primary/60 dark:text-white/60 font-light max-w-lg">
-                            Kelola daftar tamu dan konfirmasi kehadiran undangan Anda.
-                        </p>
+                        
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                            <div>
+                                <h1 className="font-serif text-3xl lg:text-4xl font-medium text-primary dark:text-white tracking-tight">
+                                    RSVP Manager
+                                </h1>
+                                <p className="text-primary/60 dark:text-white/60 font-light max-w-lg mt-2">
+                                    Kelola daftar tamu dan konfirmasi kehadiran undangan Anda.
+                                </p>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-3 pb-1">
+                                <button
+                                    onClick={exportToExcel}
+                                    disabled={rsvps.length === 0 || isLoading}
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/70 dark:bg-white/5 backdrop-blur-sm border border-white/40 dark:border-white/10 rounded-full text-xs font-semibold text-primary dark:text-white hover:bg-white dark:hover:bg-white/10 transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    Export Excel
+                                </button>
+                                <button
+                                    onClick={fetchRsvps}
+                                    disabled={isLoading}
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/70 dark:bg-white/5 backdrop-blur-sm border border-white/40 dark:border-white/10 rounded-full text-xs font-semibold text-primary dark:text-white hover:bg-white dark:hover:bg-white/10 transition-all duration-300 shadow-sm disabled:opacity-50"
+                                >
+                                    <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     {/* RSVP Table */}
-                    <RSVPTable invitationId={id} showBack={false} />
+                    <RSVPTable 
+                        invitationId={id} 
+                        rsvps={rsvps} 
+                        isLoading={isLoading} 
+                        onRefresh={fetchRsvps}
+                        setRsvps={setRsvps}
+                    />
                 </div>
             </main>
 
